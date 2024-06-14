@@ -1,0 +1,34 @@
+{
+	"code": "spawner",
+	"creativeinventory": {
+		"general": [
+			"*"
+		]
+	},
+	"blockmaterial": "Stone",
+	"drawtype": "Cube",
+	"textures": {
+		"all": {
+			"base": "block/spawner"
+		}
+	},
+	"resistance": 3.5,
+	"sounds": {
+		"place": "game:block/anvil",
+		"walk": "game:walk/stone"
+	},
+	"variantgroups": [
+		{
+			"code": "type",
+			"states": [
+				"game:drifter-normal",
+				"game:drifter-deeper",
+				"game:drifter-tainted",
+				"game:drifter-corrupt",
+				"game:drifter-nightmare",
+				"game:drifter-double-headed"
+			]
+		}
+	],
+	"entityClass": "spawner"
+}
