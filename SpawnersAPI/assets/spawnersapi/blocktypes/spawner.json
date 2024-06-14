@@ -5,14 +5,15 @@
 			"*"
 		]
 	},
-	"blockmaterial": "Stone",
-	"drawtype": "Cube",
-	"textures": {
-		"all": {
-			"base": "block/spawner"
-		}
-	},
-	"resistance": 3.5,
+	"blockmaterial": "Metal",
+	"drawtype": "json",
+	"shape": { "base": "block/locustnest/cage/cage1" },
+	"lightAbsorption": 0,
+	"sidesolid": { "all": false },
+	"sideopaque": { "all": false },
+	"replaceable": 300,
+	"resistance": 20,
+	"materialDensity": 300,
 	"sounds": {
 		"place": "game:block/anvil",
 		"walk": "game:walk/stone"

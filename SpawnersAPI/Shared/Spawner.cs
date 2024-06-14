@@ -44,7 +44,7 @@ class Spawner : BlockEntity
         float maxX = Pos.X + 4;
         float maxY = Pos.Y + 2;
         float maxZ = Pos.Z + 4;
-        byte maxChances = 10;
+        byte maxChances = 30;
         byte entitiesSpawned = 0;
         Random random = new();
         for (int i = 0; i < maxChances; i++)
@@ -82,7 +82,7 @@ class Spawner : BlockEntity
                     entity.Pos.SetPos(entity.ServerPos);                    
                     // Spawning
                     Api.World.SpawnEntity(entity);
-                    OnSpawnerSpawn.Invoke(entity);
+                    OnSpawnerSpawn?.Invoke(entity);
 
                     // Limit of 4 entities spawned at once
                     if (entitiesSpawned >= 4) break;
