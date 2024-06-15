@@ -6,6 +6,12 @@ How it works?
 - The darker the more fast spawners will work.
 - Spawners doesn't have a entity limit, will continue spawning infinitly.
 - Spawners will only work if theres is a player in 16 blocks XYZ.
+- Spawners will try to spawn entities in a range of 4x2x4.
+- Highly configurable spawners
+
+Future features
+- Configurable a range of entities to spawn
+- Limit of entities spawned
 
 # About Spawners API
 Spawners API is open source project and can easily be accessed on the github, all contents from this mod is completly free.

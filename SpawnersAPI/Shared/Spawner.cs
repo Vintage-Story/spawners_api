@@ -1,11 +1,9 @@
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
-using Vintagestory.GameContent;
 
 namespace SpawnersAPI;
 
@@ -14,15 +12,148 @@ public class Spawner : BlockEntity
     static public event Action<Entity> OnSpawnerSpawn;
     private int progressSpawn = 0;
     private long progressTickID = 0;
+    private string spawnerID = "";
+    #region behaviours
+    private bool torchWillDisableSpawn = false;
+    private int lightLevel1 = 4;
+    private int lightLevel2 = 7;
+    private int lightLevel3 = 9;
+    private int lightLevel4 = 13;
+    private int maxEntitiesSpawnAtOnce = 4;
+    private int xSpawnMaxDistance = 4;
+    private int ySpawnMaxDistance = 2;
+    private int zSpawnMaxDistance = 4;
+    private int maxChancesToFindAValidBlockToSpawn = 30;
+    #endregion
 
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
         progressTickID = RegisterGameTickListener(OnTickRate, 2000, 0);
+        #region config-load
+        spawnerID = Block.Code.ToString().Replace("spawnersapi:spawner-", "");
+        Dictionary<string, object> baseConfigs = Api.Assets.Get(new AssetLocation($"spawnersapi:config/{spawnerID}.json")).ToObject<Dictionary<string, object>>();
+        { //torchWillDisableSpawn
+            if (baseConfigs.TryGetValue("torchWillDisableSpawn", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: torchWillDisableSpawn is null");
+                else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: torchWillDisableSpawn is not boolean is {value.GetType()}");
+                else torchWillDisableSpawn = (bool)value;
+            else Debug.Log("CONFIGURATION ERROR: torchWillDisableSpawn not set");
+        }
+        { //lightLevel1
+            if (baseConfigs.TryGetValue("lightLevel1", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel1 is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel1 is not int is {value.GetType()}");
+                else lightLevel1 = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: lightLevel1 not set");
+        }
+        { //lightLevel2
+            if (baseConfigs.TryGetValue("lightLevel2", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel2 is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel2 is not int is {value.GetType()}");
+                else lightLevel2 = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: lightLevel2 not set");
+        }
+        { //lightLevel3
+            if (baseConfigs.TryGetValue("lightLevel3", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel3 is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel3 is not int is {value.GetType()}");
+                else lightLevel3 = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: lightLevel3 not set");
+        }
+        { //lightLevel4
+            if (baseConfigs.TryGetValue("lightLevel4", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel4 is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel4 is not int is {value.GetType()}");
+                else lightLevel4 = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: lightLevel4 not set");
+        }
+        { //maxEntitiesSpawnAtOnce
+            if (baseConfigs.TryGetValue("maxEntitiesSpawnAtOnce", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: maxEntitiesSpawnAtOnce is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxEntitiesSpawnAtOnce is not int is {value.GetType()}");
+                else maxEntitiesSpawnAtOnce = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: maxEntitiesSpawnAtOnce not set");
+        }
+        { //xSpawnMaxDistance
+            if (baseConfigs.TryGetValue("xSpawnMaxDistance", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: xSpawnMaxDistance is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: xSpawnMaxDistance is not int is {value.GetType()}");
+                else xSpawnMaxDistance = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: xSpawnMaxDistance not set");
+        }
+        { //ySpawnMaxDistance
+            if (baseConfigs.TryGetValue("ySpawnMaxDistance", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: ySpawnMaxDistance is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: ySpawnMaxDistance is not int is {value.GetType()}");
+                else ySpawnMaxDistance = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: ySpawnMaxDistance not set");
+        }
+        { //zSpawnMaxDistance
+            if (baseConfigs.TryGetValue("zSpawnMaxDistance", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: zSpawnMaxDistance is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: zSpawnMaxDistance is not int is {value.GetType()}");
+                else zSpawnMaxDistance = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: zSpawnMaxDistance not set");
+        }
+        { //maxChancesToFindAValidBlockToSpawn
+            if (baseConfigs.TryGetValue("maxChancesToFindAValidBlockToSpawn", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is not int is {value.GetType()}");
+                else maxChancesToFindAValidBlockToSpawn = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn not set");
+        }
+        #endregion
     }
 
     private void OnTickRate(float obj)
     {
+        // Check block existance
+        if (!Api.World.BlockAccessor.GetBlock(Pos).Code.ToString().Contains("spawnersapi:spawner"))
+        {
+            UnregisterGameTickListener(progressTickID);
+            return;
+        };
+
+        #region check-near-torchs
+        if (torchWillDisableSpawn)
+        {
+            { // North torch detection
+                BlockPos newPosition = Pos.Copy();
+                newPosition.X += 1;
+                Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
+                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+            }
+
+            { // South torch detection
+                BlockPos newPosition = Pos.Copy();
+                newPosition.X -= 1;
+                Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
+                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+            }
+
+            { // East torch detection
+                BlockPos newPosition = Pos.Copy();
+                newPosition.Z += 1;
+                Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
+                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+            }
+
+            { // West torch detection
+                BlockPos newPosition = Pos.Copy();
+                newPosition.Z -= 1;
+                Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
+                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+            }
+
+            { // On the ground torch detection, used when the spawner is flying
+                BlockPos newPosition = Pos.Copy();
+                newPosition.Y -= 1;
+                Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
+                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+            }
+        }
+        #endregion
         #region check-near-players
         IPlayer nearestPlayer = Api.World.NearestPlayer(Pos.X, Pos.Y, Pos.Z);
         if (nearestPlayer == null) return;
@@ -55,13 +186,12 @@ public class Spawner : BlockEntity
             if (xDistance > 16 || yDistance > 16 || zDistance > 16) return;
         }
         #endregion
-        
         // Progress calculation based on the light level of the block
         int lightLevel = Api.World.BlockAccessor.GetLightLevel(Pos, EnumLightLevelType.MaxLight);
-        if (lightLevel <= 4) progressSpawn += 10;
-        else if (lightLevel <= 7) progressSpawn += 5;
-        else if (lightLevel <= 9) progressSpawn += 2;
-        else if (lightLevel < 13) progressSpawn += 1;
+        if (lightLevel <= lightLevel1) progressSpawn += 10;
+        else if (lightLevel <= lightLevel2) progressSpawn += 5;
+        else if (lightLevel <= lightLevel3) progressSpawn += 3;
+        else if (lightLevel < lightLevel4) progressSpawn += 2;
         else progressSpawn = 0;
 
         // Check final progress
@@ -74,13 +204,13 @@ public class Spawner : BlockEntity
 
     private void SpawnEntities()
     {
-        float minX = Pos.X - 4;
-        float minY = Pos.Y - 2;
-        float minZ = Pos.Z - 4;
-        float maxX = Pos.X + 4;
-        float maxY = Pos.Y + 2;
-        float maxZ = Pos.Z + 4;
-        byte maxChances = 30;
+        float minX = Pos.X - xSpawnMaxDistance;
+        float minY = Pos.Y - ySpawnMaxDistance;
+        float minZ = Pos.Z - zSpawnMaxDistance;
+        float maxX = Pos.X + xSpawnMaxDistance;
+        float maxY = Pos.Y + ySpawnMaxDistance;
+        float maxZ = Pos.Z + zSpawnMaxDistance;
+        int maxChances = maxChancesToFindAValidBlockToSpawn;
         byte entitiesSpawned = 0;
         Random random = new();
         for (int i = 0; i < maxChances; i++)
@@ -103,18 +233,18 @@ public class Spawner : BlockEntity
                     entitiesSpawned++;
 
                     // Getting Entity info
-                    EntityProperties type = Api.World.GetEntityType(new AssetLocation(Block.Code.ToString().Replace("spawnersapi:spawner-", "")));
+                    EntityProperties type = Api.World.GetEntityType(new AssetLocation(spawnerID));
                     // Check if entity exist
                     if (type == null)
                     {
-                        Debug.Log($"ERROR: the entity from {Block.Code} is null: {Block.Code.ToString().Replace("spawnersapi:spawner-", "")}");
+                        Debug.Log($"ERROR: the entity from {Block.Code} is null: {spawnerID}");
                         break;
                     }
                     // Instanciating
                     Entity entity = Api.World.ClassRegistry.CreateEntity(type);
-                    entity.ServerPos.X = spawnX;
-                    entity.ServerPos.Y = spawnY;
-                    entity.ServerPos.Z = spawnZ;
+                    entity.ServerPos.X = spawnX + 0.5;
+                    entity.ServerPos.Y = spawnY + 0.5;
+                    entity.ServerPos.Z = spawnZ + 0.5;
                     entity.Pos.SetPos(entity.ServerPos);
                     entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
                     // Spawning
@@ -122,11 +252,10 @@ public class Spawner : BlockEntity
                     OnSpawnerSpawn?.Invoke(entity);
 
                     // Limit of 4 entities spawned at once
-                    if (entitiesSpawned >= 4) break;
+                    if (entitiesSpawned >= maxEntitiesSpawnAtOnce) break;
                 }
             }
         }
-
     }
 
     public override void ToTreeAttributes(ITreeAttribute tree)
