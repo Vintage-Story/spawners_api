@@ -23,12 +23,45 @@ public class Spawner : BlockEntity
 
     private void OnTickRate(float obj)
     {
+        #region check-near-players
+        IPlayer nearestPlayer = Api.World.NearestPlayer(Pos.X, Pos.Y, Pos.Z);
+        if (nearestPlayer == null) return;
+        else
+        {
+            // Getting positions
+            double playerX = nearestPlayer.Entity.Pos.X;
+            double playerY = nearestPlayer.Entity.Pos.Y;
+            double playerZ = nearestPlayer.Entity.Pos.Z;
+            double blockX = Pos.X;
+            double blockY = Pos.Y;
+            double blockZ = Pos.Z;
+
+            // X Calculation
+            double xDistance;
+            if (playerX < blockX) xDistance = blockX - playerX;
+            else xDistance = playerX - blockX;
+
+            // Y Calcuation
+            double yDistance;
+            if (playerY < blockY) yDistance = blockY - playerY;
+            else yDistance = playerY - blockY;
+
+            // Z Calculation
+            double zDistance;
+            if (playerZ < blockZ) zDistance = blockZ - playerZ;
+            else zDistance = playerY - blockY;
+
+            // Distance check
+            if (xDistance > 16 || yDistance > 16 || zDistance > 16) return;
+        }
+        #endregion
+        
         // Progress calculation based on the light level of the block
         int lightLevel = Api.World.BlockAccessor.GetLightLevel(Pos, EnumLightLevelType.MaxLight);
-        if (lightLevel <= 5) progressSpawn += 10;
-        else if (lightLevel <= 10) progressSpawn += 5;
-        else if (lightLevel <= 15) progressSpawn += 3;
-        else if (lightLevel <= 25) progressSpawn += 1;
+        if (lightLevel <= 4) progressSpawn += 10;
+        else if (lightLevel <= 7) progressSpawn += 5;
+        else if (lightLevel <= 9) progressSpawn += 2;
+        else if (lightLevel < 13) progressSpawn += 1;
         else progressSpawn = 0;
 
         // Check final progress

@@ -2,19 +2,10 @@
 Create custom spawners into creative inventory and for mods usages, this will not create any type of generations or structures with it, this is a simple API to be used among other mods.
 
 How it works?
-
-You can patch the json assets/spawnersapi/blocktypes/spawner.json to add your own code creature take a look in the default values:
-```
-"states": [
-    "game:drifter-normal",
-    "game:drifter-deeper",
-    "game:drifter-tainted",
-    "game:drifter-corrupt",
-    "game:drifter-nightmare",
-    "game:drifter-double-headed"
-]
-```
-You can easily patch this json in your mod to add a new spawner with the entity you want, the json will automatically create a new spawner in creative tab with the new entity
+- The spawners will work as long as the ambient light is less than 13. (Single torch in the spawner side on full dark place will stop the spawner)
+- The darker the more fast spawners will work.
+- Spawners doesn't have a entity limit, will continue spawning infinitly.
+- Spawners will only work if theres is a player in 16 blocks XYZ.
 
 # About Spawners API
 Spawners API is open source project and can easily be accessed on the github, all contents from this mod is completly free.
