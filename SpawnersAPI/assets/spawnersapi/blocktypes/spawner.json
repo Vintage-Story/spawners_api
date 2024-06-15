@@ -7,7 +7,7 @@
 	},
 	"blockmaterial": "Metal",
 	"drawtype": "json",
-	"shape": { "base": "block/locustnest/cage/cage1" },
+	"shape": { "base": "game:block/locustnest/cage/cage1" },
 	"lightAbsorption": 0,
 	"sidesolid": { "all": false },
 	"sideopaque": { "all": false },

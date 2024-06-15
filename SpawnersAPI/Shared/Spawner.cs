@@ -1,12 +1,15 @@
 using System;
+using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 
 namespace SpawnersAPI;
 
-class Spawner : BlockEntity
+public class Spawner : BlockEntity
 {
     static public event Action<Entity> OnSpawnerSpawn;
     private int progressSpawn = 0;
@@ -79,7 +82,8 @@ class Spawner : BlockEntity
                     entity.ServerPos.X = spawnX;
                     entity.ServerPos.Y = spawnY;
                     entity.ServerPos.Z = spawnZ;
-                    entity.Pos.SetPos(entity.ServerPos);                    
+                    entity.Pos.SetPos(entity.ServerPos);
+                    entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
                     // Spawning
                     Api.World.SpawnEntity(entity);
                     OnSpawnerSpawn?.Invoke(entity);
