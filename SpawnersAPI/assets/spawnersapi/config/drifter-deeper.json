@@ -15,5 +15,5 @@
     "yPlayerDistanceToSpawn": 16,
     "zPlayerDistanceToSpawn": 16,
     "maxChancesToFindAValidBlockToSpawn": 15,
-    "extendedLog": true
+    "extendedLogs": false
 }

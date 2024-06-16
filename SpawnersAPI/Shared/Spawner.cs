@@ -296,7 +296,7 @@ public class Spawner : BlockEntity
                     // Instanciating
                     Entity entity = Api.World.ClassRegistry.CreateEntity(type);
                     entity.ServerPos.X = spawnX + 0.5;
-                    entity.ServerPos.Y = spawnY + 0.5;
+                    entity.ServerPos.Y = spawnY;
                     entity.ServerPos.Z = spawnZ + 0.5;
                     entity.Pos.SetPos(entity.ServerPos);
                     entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
