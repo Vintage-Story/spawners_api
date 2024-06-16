@@ -1,0 +1,21 @@
+{
+  "Type": 1,
+  "TextureSize": 32,
+  "Name": "Custom Spawner",
+  "Version": "",
+  "NetworkVersion": null,
+  "Description": "",
+  "Website": "",
+  "CoreMod": false,
+  "ModID": "customspawner",
+  "Authors": [
+    "You"
+  ],
+  "Contributors": [],
+  "Side": "Universal",
+  "RequiredOnClient": true,
+  "RequiredOnServer": true,
+  "Dependencies": {
+    "spawnersapi": ""
+  }
+}
