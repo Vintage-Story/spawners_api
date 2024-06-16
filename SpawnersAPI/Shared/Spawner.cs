@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -9,6 +10,7 @@ namespace SpawnersAPI;
 
 public class Spawner : BlockEntity
 {
+    private List<string> entitiesToSpawn = ["game:drifter-normal"];
     static public event Action<Entity> OnSpawnerSpawn;
     private int progressSpawn = 0;
     private long progressTickID = 0;
@@ -23,7 +25,11 @@ public class Spawner : BlockEntity
     private int xSpawnMaxDistance = 4;
     private int ySpawnMaxDistance = 2;
     private int zSpawnMaxDistance = 4;
+    private int xPlayerDistanceToSpawn = 16;
+    private int yPlayerDistanceToSpawn = 16;
+    private int zPlayerDistanceToSpawn = 16;
     private int maxChancesToFindAValidBlockToSpawn = 30;
+    private bool extendedLogs = false;
     #endregion
 
     public override void Initialize(ICoreAPI api)
@@ -39,6 +45,13 @@ public class Spawner : BlockEntity
                 else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: torchWillDisableSpawn is not boolean is {value.GetType()}");
                 else torchWillDisableSpawn = (bool)value;
             else Debug.Log("CONFIGURATION ERROR: torchWillDisableSpawn not set");
+        }
+        { //entitiesToSpawn
+            if (baseConfigs.TryGetValue("entitiesToSpawn", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: entitiesToSpawn is null");
+                else if (value is not JArray) Debug.Log($"CONFIGURATION ERROR: entitiesToSpawn is not List is {value.GetType()}");
+                else entitiesToSpawn = (value as JArray).ToObject<List<string>>();
+            else Debug.Log("CONFIGURATION ERROR: entitiesToSpawn not set");
         }
         { //lightLevel1
             if (baseConfigs.TryGetValue("lightLevel1", out object value))
@@ -96,12 +109,40 @@ public class Spawner : BlockEntity
                 else zSpawnMaxDistance = (int)(long)value;
             else Debug.Log("CONFIGURATION ERROR: zSpawnMaxDistance not set");
         }
+        { //xPlayerDistanceToSpawn
+            if (baseConfigs.TryGetValue("xPlayerDistanceToSpawn", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: xPlayerDistanceToSpawn is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: xPlayerDistanceToSpawn is not int is {value.GetType()}");
+                else xPlayerDistanceToSpawn = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: xPlayerDistanceToSpawn not set");
+        }
+        { //yPlayerDistanceToSpawn
+            if (baseConfigs.TryGetValue("yPlayerDistanceToSpawn", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: yPlayerDistanceToSpawn is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: yPlayerDistanceToSpawn is not int is {value.GetType()}");
+                else yPlayerDistanceToSpawn = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: yPlayerDistanceToSpawn not set");
+        }
+        { //zPlayerDistanceToSpawn
+            if (baseConfigs.TryGetValue("zPlayerDistanceToSpawn", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: zPlayerDistanceToSpawn is null");
+                else if (value is not long) Debug.Log($"CONFIGURATION ERROR: zPlayerDistanceToSpawn is not int is {value.GetType()}");
+                else zPlayerDistanceToSpawn = (int)(long)value;
+            else Debug.Log("CONFIGURATION ERROR: zPlayerDistanceToSpawn not set");
+        }
         { //maxChancesToFindAValidBlockToSpawn
             if (baseConfigs.TryGetValue("maxChancesToFindAValidBlockToSpawn", out object value))
                 if (value is null) Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is null");
                 else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is not int is {value.GetType()}");
                 else maxChancesToFindAValidBlockToSpawn = (int)(long)value;
             else Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn not set");
+        }
+        { //extendedLogs
+            if (baseConfigs.TryGetValue("extendedLogs", out object value))
+                if (value is null) Debug.Log("CONFIGURATION ERROR: extendedLogs is null");
+                else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: extendedLogs is not boolean is {value.GetType()}");
+                else extendedLogs = (bool)value;
+            else Debug.Log("CONFIGURATION ERROR: extendedLogs not set");
         }
         #endregion
     }
@@ -111,10 +152,13 @@ public class Spawner : BlockEntity
         // Check block existance
         if (!Api.World.BlockAccessor.GetBlock(Pos).Code.ToString().Contains("spawnersapi:spawner"))
         {
+            if (extendedLogs)
+                Debug.Log($"{Block.Code} doesn't exist anymore removing tickrate");
             UnregisterGameTickListener(progressTickID);
             return;
         };
 
+        if (extendedLogs) Debug.Log($"{Block.Code} validating...");
         #region check-near-torchs
         if (torchWillDisableSpawn)
         {
@@ -154,6 +198,7 @@ public class Spawner : BlockEntity
             }
         }
         #endregion
+        if (extendedLogs) Debug.Log($"{Block.Code} torchWillDisableSpawn: {torchWillDisableSpawn}, validated");
         #region check-near-players
         IPlayer nearestPlayer = Api.World.NearestPlayer(Pos.X, Pos.Y, Pos.Z);
         if (nearestPlayer == null) return;
@@ -183,9 +228,11 @@ public class Spawner : BlockEntity
             else zDistance = playerY - blockY;
 
             // Distance check
-            if (xDistance > 16 || yDistance > 16 || zDistance > 16) return;
+            if (xDistance > xPlayerDistanceToSpawn || yDistance > yPlayerDistanceToSpawn || zDistance > zPlayerDistanceToSpawn)
+                return;
         }
         #endregion
+        if (extendedLogs) Debug.Log($"{Block.Code} theres a player near the spawn, validated");
         // Progress calculation based on the light level of the block
         int lightLevel = Api.World.BlockAccessor.GetLightLevel(Pos, EnumLightLevelType.MaxLight);
         if (lightLevel <= lightLevel1) progressSpawn += 10;
@@ -193,6 +240,7 @@ public class Spawner : BlockEntity
         else if (lightLevel <= lightLevel3) progressSpawn += 3;
         else if (lightLevel < lightLevel4) progressSpawn += 2;
         else progressSpawn = 0;
+        if (extendedLogs) Debug.Log($"{Block.Code} progress: {progressSpawn}, lightLevel: {lightLevel}");
 
         // Check final progress
         if (progressSpawn >= 100)
@@ -204,6 +252,7 @@ public class Spawner : BlockEntity
 
     private void SpawnEntities()
     {
+        if (extendedLogs) Debug.Log($"Entity Spawning...");
         float minX = Pos.X - xSpawnMaxDistance;
         float minY = Pos.Y - ySpawnMaxDistance;
         float minZ = Pos.Z - zSpawnMaxDistance;
@@ -233,13 +282,17 @@ public class Spawner : BlockEntity
                     entitiesSpawned++;
 
                     // Getting Entity info
-                    EntityProperties type = Api.World.GetEntityType(new AssetLocation(spawnerID));
+                    int selectedEntity = random.Next(0, entitiesToSpawn.Count); // Select a random entity
+                    EntityProperties type = Api.World.GetEntityType(new AssetLocation(entitiesToSpawn[selectedEntity]));
                     // Check if entity exist
                     if (type == null)
                     {
-                        Debug.Log($"ERROR: the entity from {Block.Code} is null: {spawnerID}");
+                        Debug.Log($"ERROR: the entity from {Block.Code} is null: {entitiesToSpawn[selectedEntity]}");
                         break;
                     }
+
+                    if (extendedLogs) Debug.Log($"valid position to spawn, entity spawning: {entitiesToSpawn[selectedEntity]}");
+
                     // Instanciating
                     Entity entity = Api.World.ClassRegistry.CreateEntity(type);
                     entity.ServerPos.X = spawnX + 0.5;

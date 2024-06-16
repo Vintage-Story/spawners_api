@@ -1,8 +1,8 @@
 {
-	"spawnersapi:block-spawner-game:drifter-normal": "Drifter Spawner",
-	"spawnersapi:block-spawner-game:drifter-deeper": "Deeper Drifter Spawner",
-	"spawnersapi:block-spawner-game:drifter-tainted": "Tainted Drifter Spawner",
-	"spawnersapi:block-spawner-game:drifter-corrupt": "Corrupt Drifter Spawner",
-	"spawnersapi:block-spawner-game:drifter-nightmare": "Nightmare Drifter Spawner",
-	"spawnersapi:block-spawner-game:drifter-double-headed": "Double Headed Drifter Spawner"
+	"spawnersapi:block-spawner-drifter-normal": "Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-deeper": "Deeper Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-tainted": "Tainted Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-corrupt": "Corrupt Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-nightmare": "Nightmare Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-double-headed": "Double Headed Drifter Spawner"
 }

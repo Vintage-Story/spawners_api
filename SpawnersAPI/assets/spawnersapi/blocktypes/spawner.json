@@ -22,12 +22,12 @@
 		{
 			"code": "type",
 			"states": [
-				"game:drifter-normal",
-				"game:drifter-deeper",
-				"game:drifter-tainted",
-				"game:drifter-corrupt",
-				"game:drifter-nightmare",
-				"game:drifter-double-headed"
+				"drifter-normal",
+				"drifter-deeper",
+				"drifter-tainted",
+				"drifter-corrupt",
+				"drifter-nightmare",
+				"drifter-double-headed"
 			]
 		}
 	],
