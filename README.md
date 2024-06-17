@@ -5,7 +5,6 @@ Every spawner has a own configuration, example:
 - The spawners will work as long as the ambient light is less than 13.
 - Placing torchs in the side of spawner will prevent for spawning entities
 - The darker the more fast spawners will work.
-- Spawners doesn't have a entity limit, will continue spawning infinitly.
 - Spawners will only work if theres is a player in 16 blocks XYZ.
 - Spawners will try to spawn entities in a range of 4x2x4.
 - Spawners will stop spawning when reach a total of 20 entities spawned
