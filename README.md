@@ -8,11 +8,10 @@ Every spawner has a own configuration, example:
 - Spawners doesn't have a entity limit, will continue spawning infinitly.
 - Spawners will only work if theres is a player in 16 blocks XYZ.
 - Spawners will try to spawn entities in a range of 4x2x4.
+- Spawners will stop spawning when reach a total of 20 entities spawned
+> Obs: All configurations described here can be changed
 
 If you want to create a custom spawner please check the [wiki](https://github.com/LeandroTheDev/spawners_api/wiki)
-
-Future features
-- Limit of entities spawned
 
 # About Spawners API
 Spawners API is open source project and can easily be accessed on the github, all contents from this mod is completly free.
@@ -22,8 +21,7 @@ If you want to contribute into the project you can access the project github and
 You are free to fork the project and make your own version of Spawners API, as long the name is changed.
 
 Inspirations:
-
-Vanilla Minecraft Spawners
+- Vanilla Minecraft Spawners
 
 # Building
 Learn more about vintage story modding in Linux or Windows

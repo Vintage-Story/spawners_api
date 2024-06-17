@@ -3,6 +3,6 @@
     "op": "add",
     "path": "/variantgroups/0/states/-",
     "value": "drifter-normal-customspawner",
-    "file": "spawnersapi:blocktypes/spawner.json",
+    "file": "spawnersapi:blocktypes/spawner.json"
   }
 ]
