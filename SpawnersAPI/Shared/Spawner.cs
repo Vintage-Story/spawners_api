@@ -371,7 +371,7 @@ public class Spawner : BlockEntity
 
         // Load spawned entities
         string entitiesSaved = tree.GetString("entitiesAlive");
-        if (entitiesSaved != null)
+        if (entitiesSaved != null && entitiesSaved != "")
             entitiesAlive = entitiesSaved.Split(",").Select(long.Parse).ToList();
     }
 
