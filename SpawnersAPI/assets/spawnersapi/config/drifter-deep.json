@@ -2,6 +2,7 @@
     "torchWillDisableSpawn": true,
     "spawnOnlyInGround": false,
     "spawnOnlyWith2Heights": false,
+    "droppable": false,
     "entitiesToSpawn": [
         "game:drifter-deep"
     ],

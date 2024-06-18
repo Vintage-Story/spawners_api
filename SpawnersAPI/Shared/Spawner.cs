@@ -21,6 +21,7 @@ public class Spawner : BlockEntity
     private bool torchWillDisableSpawn = false;
     private bool spawnOnlyInGround = false;
     private bool spawnOnlyWith2Heights = false;
+    private bool droppable = false;
     private int lightLevel1 = 4;
     private int lightLevel2 = 7;
     private int lightLevel3 = 9;
@@ -67,6 +68,13 @@ public class Spawner : BlockEntity
                     else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: spawnOnlyWith2Heights is not boolean is {value.GetType()}");
                     else spawnOnlyWith2Heights = (bool)value;
                 else Debug.Log("CONFIGURATION ERROR: spawnOnlyWith2Heights not set");
+            }
+            { //droppable
+                if (baseConfigs.TryGetValue("droppable", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: droppable is null");
+                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: droppable is not boolean is {value.GetType()}");
+                    else droppable = (bool)value;
+                else Debug.Log("CONFIGURATION ERROR: droppable not set");
             }
             { //entitiesToSpawn
                 if (baseConfigs.TryGetValue("entitiesToSpawn", out object value))
@@ -185,6 +193,7 @@ public class Spawner : BlockEntity
         {
             Debug.Log($"ERROR: {ex.Message}");
         }
+        if(!droppable) Block.Drops = [];
         #endregion
     }
 
@@ -489,4 +498,6 @@ public class Spawner : BlockEntity
         }
         return items;
     }
+
+    
 }
