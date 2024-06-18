@@ -3,7 +3,7 @@
     "spawnOnlyInGround": false,
     "spawnOnlyWith2Heights": false,
     "entitiesToSpawn": [
-        "game:drifter-nightmare"
+        "game:drifter-deep"
     ],
     "lightLevel1": 10,
     "lightLevel2": 15,

@@ -12,13 +12,15 @@ namespace SpawnersAPI;
 public class Spawner : BlockEntity
 {
     static public event Action<Entity> OnSpawnerSpawn;
-    private List<long> entitiesAlive = new();
+    private List<long> entitiesAlive = [];
     private List<string> entitiesToSpawn = ["game:drifter-normal"];
     private int progressSpawn = 0;
     private long progressTickID = 0;
     private string spawnerID = "";
     #region behaviours
     private bool torchWillDisableSpawn = false;
+    private bool spawnOnlyInGround = false;
+    private bool spawnOnlyWith2Heights = false;
     private int lightLevel1 = 4;
     private int lightLevel2 = 7;
     private int lightLevel3 = 9;
@@ -32,6 +34,7 @@ public class Spawner : BlockEntity
     private int yPlayerDistanceToSpawn = 16;
     private int zPlayerDistanceToSpawn = 16;
     private int maxChancesToFindAValidBlockToSpawn = 30;
+    private JArray spawnerDrops = [];
     private bool extendedLogs = false;
     #endregion
 
@@ -50,6 +53,20 @@ public class Spawner : BlockEntity
                     else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: torchWillDisableSpawn is not boolean is {value.GetType()}");
                     else torchWillDisableSpawn = (bool)value;
                 else Debug.Log("CONFIGURATION ERROR: torchWillDisableSpawn not set");
+            }
+            { //spawnOnlyInGround
+                if (baseConfigs.TryGetValue("spawnOnlyInGround", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: spawnOnlyInGround is null");
+                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: spawnOnlyInGround is not boolean is {value.GetType()}");
+                    else spawnOnlyInGround = (bool)value;
+                else Debug.Log("CONFIGURATION ERROR: spawnOnlyInGround not set");
+            }
+            { //spawnOnlyWith2Heights
+                if (baseConfigs.TryGetValue("spawnOnlyWith2Heights", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: spawnOnlyWith2Heights is null");
+                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: spawnOnlyWith2Heights is not boolean is {value.GetType()}");
+                    else spawnOnlyWith2Heights = (bool)value;
+                else Debug.Log("CONFIGURATION ERROR: spawnOnlyWith2Heights not set");
             }
             { //entitiesToSpawn
                 if (baseConfigs.TryGetValue("entitiesToSpawn", out object value))
@@ -148,6 +165,13 @@ public class Spawner : BlockEntity
                     else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is not int is {value.GetType()}");
                     else maxChancesToFindAValidBlockToSpawn = (int)(long)value;
                 else Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn not set");
+            }
+            { //spawnerDrops
+                if (baseConfigs.TryGetValue("spawnerDrops", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: spawnerDrops is null");
+                    else if (value is not JArray) Debug.Log($"CONFIGURATION ERROR: spawnerDrops is not List is {value.GetType()}");
+                    else spawnerDrops = value as JArray;
+                else Debug.Log("CONFIGURATION ERROR: spawnerDrops not set");
             }
             { //extendedLogs
                 if (baseConfigs.TryGetValue("extendedLogs", out object value))
@@ -319,39 +343,54 @@ public class Spawner : BlockEntity
             // Check if block is free
             if (spawnBlock.Code.ToString() == "game:air")
             {
-                // Now we need to check the if he has free space upper
-                Block upperBlock = Api.World.BlockAccessor.GetBlock(spawnBlockPos);
-                if (upperBlock.Code.ToString() == "game:air")
+                // Checking if the upper of the spawner is air
+                if (spawnOnlyWith2Heights)
                 {
-                    entitiesSpawned++;
-
-                    // Getting Entity info
-                    int selectedEntity = random.Next(0, entitiesToSpawn.Count); // Select a random entity
-                    EntityProperties type = Api.World.GetEntityType(new AssetLocation(entitiesToSpawn[selectedEntity]));
-                    // Check if entity exist
-                    if (type == null)
-                    {
-                        Debug.Log($"ERROR: the entity from {Block.Code} is null: {entitiesToSpawn[selectedEntity]}");
-                        break;
-                    }
-
-                    if (extendedLogs) Debug.Log($"valid position to spawn, entity spawning: {entitiesToSpawn[selectedEntity]}");
-
-                    // Instanciating
-                    Entity entity = Api.World.ClassRegistry.CreateEntity(type);
-                    entity.ServerPos.X = spawnX + 0.5;
-                    entity.ServerPos.Y = spawnY;
-                    entity.ServerPos.Z = spawnZ + 0.5;
-                    entity.Pos.SetPos(entity.ServerPos);
-                    entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
-                    // Spawning
-                    Api.World.SpawnEntity(entity);
-                    OnSpawnerSpawn?.Invoke(entity);
-                    entitiesAlive.Add(entity.EntityId);
-
-                    // Limit of 4 entities spawned at once
-                    if (entitiesSpawned >= maxEntitiesSpawnAtOnce || entitiesAlive.Count >= maxSpawnedEntities) break;
+                    BlockPos upperPosition = spawnBlockPos;
+                    upperPosition.Y += 1;
+                    Block upperBlock = Api.World.BlockAccessor.GetBlock(upperPosition);
+                    if (upperBlock.Code.ToString() != "game:air") continue;
                 }
+
+                // Checking if the ground of the entity spawning is not air
+                if (spawnOnlyInGround)
+                {
+                    BlockPos downPosition = spawnBlockPos;
+                    downPosition.Y -= 1;
+                    Block downBlock = Api.World.BlockAccessor.GetBlock(downPosition);
+                    if (downBlock.Code.ToString() == "game:air") continue;
+                }
+
+
+                entitiesSpawned++;
+
+                // Getting Entity info
+                int selectedEntity = random.Next(0, entitiesToSpawn.Count); // Select a random entity
+                EntityProperties type = Api.World.GetEntityType(new AssetLocation(entitiesToSpawn[selectedEntity]));
+                // Check if entity exist
+                if (type == null)
+                {
+                    Debug.Log($"ERROR: the entity from {Block.Code} is null: {entitiesToSpawn[selectedEntity]}");
+                    break;
+                }
+
+                if (extendedLogs) Debug.Log($"valid position to spawn, entity spawning: {entitiesToSpawn[selectedEntity]}");
+
+                // Instanciating
+                Entity entity = Api.World.ClassRegistry.CreateEntity(type);
+                entity.ServerPos.X = spawnX + 0.5;
+                entity.ServerPos.Y = spawnY;
+                entity.ServerPos.Z = spawnZ + 0.5;
+                entity.Pos.SetPos(entity.ServerPos);
+                entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
+                // Spawning
+                Api.World.SpawnEntity(entity);
+                OnSpawnerSpawn?.Invoke(entity);
+                entitiesAlive.Add(entity.EntityId);
+
+                // Limit of 4 entities spawned at once
+                if (entitiesSpawned >= maxEntitiesSpawnAtOnce || entitiesAlive.Count >= maxSpawnedEntities) break;
+
             }
         }
     }
@@ -371,7 +410,7 @@ public class Spawner : BlockEntity
 
         // Load spawned entities
         string entitiesSaved = tree.GetString("entitiesAlive");
-        if (entitiesSaved != null && entitiesSaved != "")
+        if (entitiesSaved != null)
             entitiesAlive = entitiesSaved.Split(",").Select(long.Parse).ToList();
     }
 
@@ -379,5 +418,75 @@ public class Spawner : BlockEntity
     {
         base.OnBlockUnloaded();
         UnregisterGameTickListener(progressTickID);
+    }
+
+    public override void OnBlockBroken(IPlayer byPlayer = null)
+    {
+        base.OnBlockBroken(byPlayer);
+        // Particles when breaking
+        SimpleParticleProperties props = new(15f, 22f, ColorUtil.ToRgba(150, 0, 0, 0), new Vec3d(Pos.X, Pos.Y, Pos.Z), new Vec3d(Pos.X + 1, Pos.Y + 1, Pos.Z + 1), new Vec3f(-0.2f, -0.1f, -0.2f), new Vec3f(0.2f, 0.2f, 0.2f), 1.5f, 0f, 0.5f, 1f, EnumParticleModel.Quad)
+        {
+            OpacityEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, -200f),
+            SizeEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, 2f)
+        };
+        Api.World.SpawnParticles(props);
+        SimpleParticleProperties spiders = new(8f, 16f, ColorUtil.ToRgba(255, 50, 50, 50), new Vec3d(Pos.X, Pos.Y, Pos.Z), new Vec3d(Pos.X + 1, Pos.Y + 1, Pos.Z + 1), new Vec3f(-2f, -0.3f, -2f), new Vec3f(2f, 1f, 2f), 1f, 0.5f, 0.5f, 1.5f);
+        Api.World.SpawnParticles(spiders);
+
+        // Loot drops
+        foreach (ItemStack itemStack in GetItemDrops())
+            Api.World.SpawnItemEntity(itemStack, Pos.ToVec3d());
+
+    }
+
+    private List<ItemStack> GetItemDrops()
+    {
+        if(extendedLogs) Debug.Log("starting loot drop calculation");
+        Random random = new();
+        JArray drops = null;
+        { // Getting the drops by chance
+            // This is used to increase performance
+            // when the chance is too low and cannot get any item
+            // we will increase all chance drop rates to finally find one
+            int chanceIncreaser = 0;
+            while (true)
+            {
+                // Swipe all drop lists
+                foreach (JObject drop in spawnerDrops.Cast<JObject>())
+                {
+                    int chance = (int)drop["chance"] + chanceIncreaser;
+                    if (random.Next(0, 100) >= chance)
+                    {
+                        // Adding the drops to the drops table
+                        drops = (JArray)drop["codes"];
+                        break;
+                    }
+                }
+                // Checking if we finded the drop
+                if (drops != null) break;
+                chanceIncreaser += 10;
+            }
+        }
+
+        List<ItemStack> items = [];
+        // Swiping every drop from the drops array
+        foreach (JObject drop in drops.Cast<JObject>())
+        {
+            int chance = (int)drop["chance"];
+            if (random.Next(0, 100) <= chance)
+            {
+                string itemCode = (string)drop["code"];
+                AssetLocation code = new(itemCode);
+                ItemStack item = new(Api.World.GetItem(code));
+                item ??= new(Api.World.GetBlock(code));
+                if (item == null) Debug.Log($"ERROR: Cannot retrieve spawner drop because {itemCode} does not exist");
+                else
+                {
+                    item.StackSize = random.Next((int)drop["minQuantity"], (int)drop["maxQuantity"] + 1);
+                    items.Add(item);
+                };
+            }
+        }
+        return items;
     }
 }

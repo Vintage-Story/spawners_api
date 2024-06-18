@@ -9,7 +9,7 @@
 	"drawtype": "json",
 	"shape": { "base": "game:block/locustnest/cage/cage1" },
 	"lightAbsorption": 0,
-	"sidesolid": { "all": false },
+	"sidesolid": { "all": true },
 	"sideopaque": { "all": false },
 	"replaceable": 300,
 	"resistance": 20,
@@ -23,7 +23,7 @@
 			"code": "type",
 			"states": [
 				"drifter-normal",
-				"drifter-deeper",
+				"drifter-deep",
 				"drifter-tainted",
 				"drifter-corrupt",
 				"drifter-nightmare",
