@@ -1,0 +1,8 @@
+ {
+	"spawnersapi:block-spawner-drifter-normal": "Oberwelt Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-deep": "Tiefen Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-tainted": "Verseuchter Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-corrupt": "Korrupter Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-nightmare": "Albtraum Drifter Spawner",
+	"spawnersapi:block-spawner-drifter-double-headed": "Zweiköpfiger Drifter Spawner"
+}
