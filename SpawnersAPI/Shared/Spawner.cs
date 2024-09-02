@@ -42,7 +42,10 @@ public class Spawner : BlockEntity
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
-        progressTickID = RegisterGameTickListener(OnTickRate, 2000, 0);
+        // Clients does not need to register a game tick listener
+        if (api.Side != EnumAppSide.Client)
+            progressTickID = RegisterGameTickListener(OnTickRate, 2000, 0);
+
         #region config-load
         spawnerID = Block.Code.ToString().Replace("spawnersapi:spawner-", "");
         try
@@ -193,18 +196,21 @@ public class Spawner : BlockEntity
         {
             Debug.Log($"ERROR: {ex.Message}");
         }
-        if(!droppable) Block.Drops = [];
+        if (!droppable) Block.Drops = [];
         #endregion
     }
 
     private void OnTickRate(float obj)
     {
+        // Getting the block
+        Block spawnerBlock = Api.World.BlockAccessor.GetBlock(Pos);
         // Check block existance
-        if (!Api.World.BlockAccessor.GetBlock(Pos).Code.ToString().Contains("spawnersapi:spawner"))
+        if (spawnerBlock == null || !spawnerBlock.Code.ToString().Contains("spawnersapi:spawner"))
         {
             if (extendedLogs)
                 Debug.Log($"{Block.Code} doesn't exist anymore removing tickrate");
-            UnregisterGameTickListener(progressTickID);
+            if (progressTickID != 0)
+                UnregisterGameTickListener(progressTickID);
             return;
         };
 
@@ -426,7 +432,8 @@ public class Spawner : BlockEntity
     public override void OnBlockUnloaded()
     {
         base.OnBlockUnloaded();
-        UnregisterGameTickListener(progressTickID);
+        if (progressTickID != 0)
+            UnregisterGameTickListener(progressTickID);
     }
 
     public override void OnBlockBroken(IPlayer byPlayer = null)
@@ -450,7 +457,7 @@ public class Spawner : BlockEntity
 
     private List<ItemStack> GetItemDrops()
     {
-        if(extendedLogs) Debug.Log("starting loot drop calculation");
+        if (extendedLogs) Debug.Log("starting loot drop calculation");
         Random random = new();
         JArray drops = null;
         { // Getting the drops by chance
@@ -499,5 +506,5 @@ public class Spawner : BlockEntity
         return items;
     }
 
-    
+
 }
