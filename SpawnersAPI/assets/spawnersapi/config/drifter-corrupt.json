@@ -18,7 +18,8 @@
     "xPlayerDistanceToSpawn": 16,
     "yPlayerDistanceToSpawn": 16,
     "zPlayerDistanceToSpawn": 16,
-    "maxChancesToFindAValidBlockToSpawn": 15,
+    "entityHealthMultiply": 1.0,
+    "entityDamageMultiply": 1.0,
     "spawnerDrops": [
         {
             "chance": 20,

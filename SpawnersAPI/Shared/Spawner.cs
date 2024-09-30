@@ -35,6 +35,8 @@ public class Spawner : BlockEntity
     private int yPlayerDistanceToSpawn = 16;
     private int zPlayerDistanceToSpawn = 16;
     private int maxChancesToFindAValidBlockToSpawn = 30;
+    private float entityHealthMultiply = 1.0f;
+    private float entityDamageMultiply = 1.0f;
     private JArray spawnerDrops = [];
     private bool extendedLogs = false;
     #endregion
@@ -176,6 +178,20 @@ public class Spawner : BlockEntity
                     else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is not int is {value.GetType()}");
                     else maxChancesToFindAValidBlockToSpawn = (int)(long)value;
                 else Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn not set");
+            }
+            { //entityHealthMultiply
+                if (baseConfigs.TryGetValue("entityHealthMultiply", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: entityHealthMultiply is null");
+                    else if (value is not double) Debug.Log($"CONFIGURATION ERROR: entityHealthMultiply is not double is {value.GetType()}");
+                    else entityHealthMultiply = (float)(double)value;
+                else Debug.Log("CONFIGURATION ERROR: entityHealthMultiply not set");
+            }
+            { //entityDamageMultiply
+                if (baseConfigs.TryGetValue("entityDamageMultiply", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: entityDamageMultiply is null");
+                    else if (value is not double) Debug.Log($"CONFIGURATION ERROR: entityDamageMultiply is not double is {value.GetType()}");
+                    else entityDamageMultiply = (float)(double)value;
+                else Debug.Log("CONFIGURATION ERROR: entityDamageMultiply not set");
             }
             { //spawnerDrops
                 if (baseConfigs.TryGetValue("spawnerDrops", out object value))
@@ -398,6 +414,13 @@ public class Spawner : BlockEntity
                 entity.ServerPos.Z = spawnZ + 0.5;
                 entity.Pos.SetPos(entity.ServerPos);
                 entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
+
+                // Debugging
+                foreach (KeyValuePair<string, IAttribute> keyValue in entity.WatchedAttributes)
+                    Debug.Log($"ENTITY WATCH ATTRIBUTES KEY: {keyValue.Key} | VALUE: {keyValue.Value} | ID: {keyValue.Value.GetAttributeId()}");
+                foreach (KeyValuePair<string, IAttribute> keyValue in entity.Attributes)
+                    Debug.Log($"ENTITY PURE ATTRIBUTES KEY: {keyValue.Key} | VALUE: {keyValue.Value} | ID: {keyValue.Value.GetAttributeId()}");
+
                 // Spawning
                 Api.World.SpawnEntity(entity);
                 OnSpawnerSpawn?.Invoke(entity);
