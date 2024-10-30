@@ -6,6 +6,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 
 namespace SpawnersAPI;
 
@@ -22,6 +23,9 @@ public class Spawner : BlockEntity
     private bool spawnOnlyInGround = false;
     private bool spawnOnlyWith2Heights = false;
     private bool droppable = false;
+    private bool freezeOnAllEntitiesSpawned = false;
+    private double healthAdditional = 1.0;
+    private double damageAdditional = 1.0;
     private int lightLevel1 = 4;
     private int lightLevel2 = 7;
     private int lightLevel3 = 9;
@@ -78,6 +82,27 @@ public class Spawner : BlockEntity
                     else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: droppable is not boolean is {value.GetType()}");
                     else droppable = (bool)value;
                 else Debug.Log("CONFIGURATION ERROR: droppable not set");
+            }
+            { //freezeOnAllEntitiesSpawned
+                if (baseConfigs.TryGetValue("freezeOnAllEntitiesSpawned", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: freezeOnAllEntitiesSpawned is null");
+                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: freezeOnAllEntitiesSpawned is not boolean is {value.GetType()}");
+                    else freezeOnAllEntitiesSpawned = (bool)value;
+                else Debug.Log("CONFIGURATION ERROR: freezeOnAllEntitiesSpawned not set");
+            }
+            { //healthAdditional
+                if (baseConfigs.TryGetValue("healthAdditional", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: healthAdditional is null");
+                    else if (value is not double) Debug.Log($"CONFIGURATION ERROR: healthAdditional is not double is {value.GetType()}");
+                    else healthAdditional = (double)value;
+                else Debug.Log("CONFIGURATION ERROR: healthAdditional not set");
+            }
+            { //damageAdditional
+                if (baseConfigs.TryGetValue("damageAdditional", out object value))
+                    if (value is null) Debug.Log("CONFIGURATION ERROR: damageAdditional is null");
+                    else if (value is not double) Debug.Log($"CONFIGURATION ERROR: damageAdditional is not double is {value.GetType()}");
+                    else damageAdditional = (double)value;
+                else Debug.Log("CONFIGURATION ERROR: damageAdditional not set");
             }
             { //entitiesToSpawn
                 if (baseConfigs.TryGetValue("entitiesToSpawn", out object value))
@@ -204,6 +229,8 @@ public class Spawner : BlockEntity
     {
         // Getting the block
         Block spawnerBlock = Api.World.BlockAccessor.GetBlock(Pos);
+        // Check the freeze on all entities spawned condition
+        if (freezeOnAllEntitiesSpawned && entitiesAlive.Count >= maxSpawnedEntities) return;
         // Check block existance
         if (spawnerBlock == null || !spawnerBlock.Code.ToString().Contains("spawnersapi:spawner"))
         {
@@ -393,6 +420,9 @@ public class Spawner : BlockEntity
 
                 // Instanciating
                 Entity entity = Api.World.ClassRegistry.CreateEntity(type);
+                // Setting the variable to be increased the damage
+                entity.Attributes.SetDouble("SpawnersAPIDamageIncrease", damageAdditional);
+                entity.Attributes.SetDouble("SpawnersAPIHealthIncrease", healthAdditional);
                 entity.ServerPos.X = spawnX + 0.5;
                 entity.ServerPos.Y = spawnY;
                 entity.ServerPos.Z = spawnZ + 0.5;
@@ -402,10 +432,10 @@ public class Spawner : BlockEntity
                 Api.World.SpawnEntity(entity);
                 OnSpawnerSpawn?.Invoke(entity);
                 entitiesAlive.Add(entity.EntityId);
+                UpdateEntityStatus(entity);
 
-                // Limit of 4 entities spawned at once
+                // Limit of maxSpawnedEntities once
                 if (entitiesSpawned >= maxEntitiesSpawnAtOnce || entitiesAlive.Count >= maxSpawnedEntities) break;
-
             }
         }
     }
@@ -506,5 +536,13 @@ public class Spawner : BlockEntity
         return items;
     }
 
+    private void UpdateEntityStatus(Entity entity)
+    {
+        // Changing Health Stats
+        EntityBehaviorHealth entityLifeStats = entity.GetBehavior<EntityBehaviorHealth>();
+        entityLifeStats.BaseMaxHealth += (float)(entityLifeStats.BaseMaxHealth * healthAdditional);
+        entityLifeStats.Health += (float)(entityLifeStats.Health * healthAdditional);
 
+        // Looking for the damage? is on Overwrite.cs
+    }
 }

@@ -3,6 +3,9 @@
     "spawnOnlyInGround": false,
     "spawnOnlyWith2Heights": false,
     "droppable": false,
+    "freezeOnAllEntitiesSpawned": false,
+    "healthAdditional": 1.0,
+    "damageAdditional": 1.0,
     "entitiesToSpawn": [
         "game:drifter-double-headed"
     ],

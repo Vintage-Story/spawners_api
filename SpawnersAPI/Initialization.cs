@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SpawnersAPI.Shared;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
@@ -7,6 +7,8 @@ namespace SpawnersAPI;
 
 public class Initialization : ModSystem
 {
+    readonly Overwrite overwriter = new();
+
     public override void AssetsFinalize(ICoreAPI api)
     {
         base.AssetsFinalize(api);
@@ -32,9 +34,11 @@ public class Initialization : ModSystem
         base.Start(api);
         Debug.LoadLogger(api.Logger);
         Debug.Log($"Running on Version: {Mod.Info.Version}");
-        #region block-register
+
+        // Register spawner block
         api.RegisterBlockEntityClass("spawner", typeof(Spawner));
-        #endregion
+        // Overwrite native functions
+        overwriter.OverwriteNativeFunctions(api);
     }
 
     public override void StartClientSide(ICoreClientAPI api)
@@ -55,7 +59,6 @@ public class Initialization : ModSystem
 
 public class Debug
 {
-    private static readonly OperatingSystem system = Environment.OSVersion;
     static private ILogger loggerForNonTerminalUsers;
 
     static public void LoadLogger(ILogger logger) => loggerForNonTerminalUsers = logger;

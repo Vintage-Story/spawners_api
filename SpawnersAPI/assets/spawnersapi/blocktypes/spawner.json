@@ -22,6 +22,7 @@
 		{
 			"code": "type",
 			"states": [
+				"drifter-boss",
 				"drifter-normal",
 				"drifter-deep",
 				"drifter-tainted",
