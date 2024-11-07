@@ -7,7 +7,7 @@
     "healthAdditional": 5.0,
     "damageAdditional": 5.0,
     "entitiesToSpawn": [
-        "game:drifter-normal"
+        "spawnersapi:boss-drifter-normal"
     ],
     "lightLevel1": 100,
     "lightLevel2": 15,
