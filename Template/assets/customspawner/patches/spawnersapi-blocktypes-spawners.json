@@ -4,5 +4,11 @@
     "path": "/variantgroups/0/states/-",
     "value": "drifter-normal-customspawner",
     "file": "spawnersapi:blocktypes/spawner.json"
+  },
+  {
+    "op": "add",
+    "path": "/variantgroups/0/states/-",
+    "value": "drifter-boss-customspawner",
+    "file": "spawnersapi:blocktypes/spawner.json"
   }
 ]

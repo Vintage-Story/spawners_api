@@ -5,5 +5,19 @@
 	"spawnersapi:block-spawner-drifter-tainted": "Tainted Drifter Spawner",
 	"spawnersapi:block-spawner-drifter-corrupt": "Corrupt Drifter Spawner",
 	"spawnersapi:block-spawner-drifter-nightmare": "Nightmare Drifter Spawner",
-	"spawnersapi:block-spawner-drifter-double-headed": "Double Headed Drifter Spawner"
+	"spawnersapi:block-spawner-drifter-double-headed": "Double Headed Drifter Spawner",
+
+	"spawnersapi:item-creature-boss-drifter-normal": "Boss Drifter",
+	"spawnersapi:item-creature-boss-drifter-deep": "Boss Drifter Deep",
+	"spawnersapi:item-creature-boss-drifter-tainted": "Boss Drifter Tainted",
+	"spawnersapi:item-creature-boss-drifter-corrupt": "Boss Drifter Corrupt",
+	"spawnersapi:item-creature-boss-drifter-nightmare": "Boss Drifter Nightmare",
+	"spawnersapi:item-creature-boss-drifter-double-headed": "Boss Drifter Double Headed",	
+
+	"spawnersapi:item-dead-creature-boss-drifter-normal": "Boss Drifter",
+	"spawnersapi:item-dead-creature-boss-drifter-deep": "Boss Drifter Deep",
+	"spawnersapi:item-dead-creature-boss-drifter-tainted": "Boss Drifter Tainted",
+	"spawnersapi:item-dead-creature-boss-drifter-corrupt": "Boss Drifter Corrupt",
+	"spawnersapi:item-dead-creature-boss-drifter-nightmare": "Boss Drifter Nightmare",
+	"spawnersapi:item-dead-creature-boss-drifter-double-headed": "Boss Drifter Double Headed"
 }

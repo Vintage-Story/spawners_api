@@ -5,5 +5,12 @@
 	"spawnersapi:block-spawner-drifter-tainted": "Verseuchter Drifter Spawner",
 	"spawnersapi:block-spawner-drifter-corrupt": "Korrupter Drifter Spawner",
 	"spawnersapi:block-spawner-drifter-nightmare": "Albtraum Drifter Spawner",
-	"spawnersapi:block-spawner-drifter-double-headed": "Zweiköpfiger Drifter Spawner"
+	"spawnersapi:block-spawner-drifter-double-headed": "Zweiköpfiger Drifter Spawner",
+
+	"spawnersapi:item-creature-boss-drifter-normal": "Boss Drifter",
+	"spawnersapi:item-creature-boss-drifter-deep": "Boss Drifter Deep",
+	"spawnersapi:item-creature-boss-drifter-tainted": "Boss Drifter Tainted",
+	"spawnersapi:item-creature-boss-drifter-corrupt": "Boss Drifter Corrupt",
+	"spawnersapi:item-creature-boss-drifter-nightmare": "Boss Drifter Nightmare",
+	"spawnersapi:item-creature-boss-drifter-double-headed": "Boss Drifter Double Headed"
 }

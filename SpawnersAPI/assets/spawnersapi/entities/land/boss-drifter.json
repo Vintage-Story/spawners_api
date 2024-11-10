@@ -46,56 +46,56 @@
 		"pitchStep": false,
 		"shapeByType": {
 			"*-normal": {
-				"base": "entity/land/drifter/surface"
+				"base": "game:entity/land/drifter/surface"
 			},
 			"*-deep": {
-				"base": "entity/land/drifter/surface"
+				"base": "game:entity/land/drifter/surface"
 			},
 			"*-tainted": {
-				"base": "entity/land/drifter/spiked1",
+				"base": "game:entity/land/drifter/spiked1",
 				"alternates": [
 					{
-						"base": "entity/land/drifter/spiked2"
+						"base": "game:entity/land/drifter/spiked2"
 					}
 				]
 			},
 			"*-corrupt": {
-				"base": "entity/land/drifter/deerhorn"
+				"base": "game:entity/land/drifter/deerhorn"
 			},
 			"*-nightmare": {
-				"base": "entity/land/drifter/knife"
+				"base": "game:entity/land/drifter/knife"
 			},
 			"*-double-headed": {
-				"base": "entity/land/drifter/double-headed"
+				"base": "game:entity/land/drifter/double-headed"
 			}
 		},
 		"texturesByType": {
 			"*-normal": {
 				"skin": {
-					"base": "entity/drifter/surface1",
+					"base": "game:entity/drifter/surface1",
 					"alternates": [
 						{
-							"base": "entity/drifter/surface2"
+							"base": "game:entity/drifter/surface2"
 						},
 						{
-							"base": "entity/drifter/surface3"
+							"base": "game:entity/drifter/surface3"
 						}
 					]
 				}
 			},
 			"*-deep": {
 				"skin": {
-					"base": "entity/drifter/deep1",
+					"base": "game:entity/drifter/deep1",
 					"alternates": [
 						{
-							"base": "entity/drifter/deep2"
+							"base": "game:entity/drifter/deep2"
 						}
 					]
 				}
 			},
 			"*-double-headed": {
 				"skin": {
-					"base": "entity/drifter/double"
+					"base": "game:entity/drifter/double"
 				}
 			}
 		},
@@ -338,7 +338,7 @@
 						"attackDurationMs": 1000,
 						"animation": "standattack",
 						"animationSpeed": 1.5,
-						"sound": "creature/drifter-hit",
+						"sound": "game:creature/drifter-hit",
 						"soundStartMs": 400
 					},
 					{
@@ -369,7 +369,7 @@
 						"seekingRange": 20,
 						"animationSpeed": 1.3,
 						"animation": "standrun",
-						"sound": "creature/drifter-aggro"
+						"sound": "game:creature/drifter-aggro"
 					},
 					{
 						"code": "idle",
@@ -646,8 +646,8 @@
 	},
 	"idleSoundRange": 14,
 	"sounds": {
-		"hurt": "creature/drifter-hurt",
-		"death": "creature/drifter-death",
-		"idle": "creature/drifter-idle"
+		"hurt": "game:creature/drifter-hurt",
+		"death": "game:creature/drifter-death",
+		"idle": "game:creature/drifter-idle"
 	}
 }

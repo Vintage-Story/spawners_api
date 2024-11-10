@@ -227,10 +227,26 @@ public class Spawner : BlockEntity
 
     private void OnTickRate(float obj)
     {
+        // Checking entities alive
+        for (int i = entitiesAlive.Count - 1; i >= 0; i--)
+        {
+            long id = entitiesAlive[i];
+            Entity entity = Api.World.GetEntityById(id);
+            if (entity is not null)
+            {
+                if (!entity.Alive) entitiesAlive.RemoveAt(i);
+            }
+            else entitiesAlive.RemoveAt(i);
+        }
         // Getting the block
         Block spawnerBlock = Api.World.BlockAccessor.GetBlock(Pos);
         // Check the freeze on all entities spawned condition
-        if (freezeOnAllEntitiesSpawned && entitiesAlive.Count >= maxSpawnedEntities) return;
+        if (freezeOnAllEntitiesSpawned && entitiesAlive.Count >= maxSpawnedEntities)
+        {
+            if (extendedLogs)
+                Debug.Log($"Progress is freezed, entities alive: {entitiesAlive.Count}");
+            return;
+        };
         // Check block existance
         if (spawnerBlock == null || !spawnerBlock.Code.ToString().Contains("spawnersapi:spawner"))
         {

@@ -1,0 +1,62 @@
+{
+    "torchWillDisableSpawn": false,
+    "spawnOnlyInGround": false,
+    "spawnOnlyWith2Heights": false,
+    "droppable": false,
+    "freezeOnAllEntitiesSpawned": true,
+    "healthAdditional": 5.0,
+    "damageAdditional": 5.0,
+    "entitiesToSpawn": [
+        "game:drifter-normal"
+    ],
+    "lightLevel1": 100,
+    "lightLevel2": -1,
+    "lightLevel3": -1,
+    "lightLevel4": -1,
+    "maxSpawnedEntities": 1,
+    "maxEntitiesSpawnAtOnce": 1,
+    "xSpawnMaxDistance": 4,
+    "ySpawnMaxDistance": 2,
+    "zSpawnMaxDistance": 4,
+    "xPlayerDistanceToSpawn": 16,
+    "yPlayerDistanceToSpawn": 16,
+    "zPlayerDistanceToSpawn": 16,
+    "maxChancesToFindAValidBlockToSpawn": 15,
+    "spawnerDrops": [
+        {
+            "chance": 20,
+            "codes": [
+                {
+                    "chance": 100,
+                    "minQuantity": 5,
+                    "maxQuantity": 10,
+                    "code": "game:nugget-cassiterite"
+                },
+                {
+                    "chance": 50,
+                    "minQuantity": 1,
+                    "maxQuantity": 5,
+                    "code": "game:nugget-nativecopper"
+                }
+            ]
+        },
+        {
+            "chance": 100,
+            "codes": [
+                {
+                    "chance": 100,
+                    "minQuantity": 5,
+                    "maxQuantity": 10,
+                    "code": "game:nugget-cassiterite"
+                },
+                {
+                    "chance": 20,
+                    "minQuantity": 1,
+                    "maxQuantity": 2,
+                    "code": "game:gear-temporal"
+                }
+            ]
+        }
+    ],
+    "extendedLogs": false
+}
