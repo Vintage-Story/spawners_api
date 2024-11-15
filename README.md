@@ -1,20 +1,9 @@
 # Spawners API
 Create custom spawners into creative inventory and for mods usages, this will not create any type of generations or structures with it, this is a simple API to be used among other mods.
 
-Every spawner has a own configuration, example:
-- The spawners will work as long as the ambient light is less than 13.
-- Placing torchs in the side of spawner will prevent from spawning entities
-- The darker the more fast spawners will work.
-- Spawners doesn't have a entity limit, will continue spawning infinitly.
-- Spawners will only work if theres is a player in 16 blocks XYZ.
-- Spawners will try to spawn entities in a range of 4x2x4.
-- Spawners will stop spawning when reach a total of 20 entities spawned
-- Spawners when breaked will spawn copper and casseterite or in rare cases a temporal gear
-- Spawners will only work if there a ground for the entity spawn
-- Spawners will only work if 2 tall blocks are available to entity trying to spawn
-> Obs: All configurations described before can be changed
+Every spawner has a own configuration, you can check all configurations in the [Configurations](https://github.com/LeandroTheDev/spawners_api/wiki/Spawners-Configurations) section from the [wiki](https://github.com/LeandroTheDev/spawners_api/wiki)
 
-If you want to create a custom spawner please check the [wiki](https://github.com/LeandroTheDev/spawners_api/wiki)
+If you want to create a custom spawner please check the [Creating Custom Spawner](https://github.com/LeandroTheDev/spawners_api/wiki#creating-custom-spawner)
 
 # About Spawners API
 Spawners API is open source project and can easily be accessed on the github, all contents from this mod is completly free.

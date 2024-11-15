@@ -517,7 +517,7 @@ public class Spawner : BlockEntity
                 foreach (JObject drop in spawnerDrops.Cast<JObject>())
                 {
                     int chance = (int)drop["chance"] + chanceIncreaser;
-                    if (random.Next(0, 100) >= chance)
+                    if (chance >= random.Next(0, 100))
                     {
                         // Adding the drops to the drops table
                         drops = (JArray)drop["codes"];
@@ -539,14 +539,34 @@ public class Spawner : BlockEntity
             {
                 string itemCode = (string)drop["code"];
                 AssetLocation code = new(itemCode);
-                ItemStack item = new(Api.World.GetItem(code));
-                item ??= new(Api.World.GetBlock(code));
-                if (item == null) Debug.Log($"ERROR: Cannot retrieve spawner drop because {itemCode} does not exist");
-                else
+                ItemStack item;
+
+                // Item
+                try
                 {
-                    item.StackSize = random.Next((int)drop["minQuantity"], (int)drop["maxQuantity"] + 1);
+                    item = new(Api.World.GetItem(code))
+                    {
+                        StackSize = random.Next((int)drop["minQuantity"], (int)drop["maxQuantity"] + 1)
+                    };
                     items.Add(item);
-                };
+                    continue;
+                }
+                catch (Exception) { }
+
+                // Block
+                try
+                {
+                    item = new(Api.World.GetBlock(code))
+                    {
+                        StackSize = random.Next((int)drop["minQuantity"], (int)drop["maxQuantity"] + 1)
+                    };
+                    items.Add(item);
+                    continue;
+                }
+                catch (Exception) { }
+
+                // Invalid
+                Debug.Log($"ERROR: Cannot retrieve spawner drop because {itemCode} does not exist");
             }
         }
         return items;
