@@ -16,19 +16,11 @@ Inspirations:
 - Vanilla Minecraft Spawners
 
 # Building
-Learn more about vintage story modding in Linux or Windows
+- Install .NET in your system, open terminal type: ``dotnet new install VintageStory.Mod.Templates``
+- Create a template with the name ``SpawnersAPI``: ``dotnet new vsmod --AddSolutionFile -o SpawnersAPI``
+- [Clone the repository](https://github.com/LeandroTheDev/spawners_api/archive/refs/heads/main.zip)
+- Copy the ``CakeBuild`` and ``build.ps1`` or ``build.sh`` and paste inside the repository
 
-Download the mod template for vintage store with name SpawnersAPI and paste all contents from this project in there
-
-> Linux
-
-Make a symbolic link for fast tests
-
-ln -s /path/to/project/Releases/spanersapi/* /path/to/game/Mods/SpawnersAPI/
-Execute the comamnd ./build.sh, consider having setup everthing from vintage story ide before
-
-> Windows
-
-Just open the visual studio with LevelUP.sln
+Now you can build using the ``build.ps1`` or ``build.sh`` file
 
 FTM License
