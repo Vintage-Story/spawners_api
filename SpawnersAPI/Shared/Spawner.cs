@@ -265,35 +265,48 @@ public class Spawner : BlockEntity
                 BlockPos newPosition = Pos.Copy();
                 newPosition.X += 1;
                 Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
-                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+                if (extendedLogs) Debug.Log($"{Block.Code} North Block: {receivedBlock.Code}");
+                if (receivedBlock.Code.ToString().Contains("game:torch-basic-lit")) return;
             }
 
             { // South torch detection
                 BlockPos newPosition = Pos.Copy();
                 newPosition.X -= 1;
                 Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
-                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+                if (extendedLogs) Debug.Log($"{Block.Code} South Block: {receivedBlock.Code}");
+                if (receivedBlock.Code.ToString().Contains("game:torch-basic-lit")) return;
             }
 
             { // East torch detection
                 BlockPos newPosition = Pos.Copy();
                 newPosition.Z += 1;
                 Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
-                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+                if (extendedLogs) Debug.Log($"{Block.Code} East Block: {receivedBlock.Code}");
+                if (receivedBlock.Code.ToString().Contains("game:torch-basic-lit")) return;
             }
 
             { // West torch detection
                 BlockPos newPosition = Pos.Copy();
                 newPosition.Z -= 1;
                 Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
-                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+                if (extendedLogs) Debug.Log($"{Block.Code} West Block: {receivedBlock.Code}");
+                if (receivedBlock.Code.ToString().Contains("game:torch-basic-lit")) return;
             }
 
             { // On the ground torch detection, used when the spawner is flying
                 BlockPos newPosition = Pos.Copy();
                 newPosition.Y -= 1;
                 Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
-                if (receivedBlock.Code.ToString() == "game:torch-basic-lit-up") return;
+                if (extendedLogs) Debug.Log($"{Block.Code} Ground Block: {receivedBlock.Code}");
+                if (receivedBlock.Code.ToString().Contains("game:torch-basic-lit")) return;
+            }
+
+            { // On the top torch detection
+                BlockPos newPosition = Pos.Copy();
+                newPosition.Y += 1;
+                Block receivedBlock = Api.World.BlockAccessor.GetBlock(newPosition);
+                if (extendedLogs) Debug.Log($"{Block.Code} Top Block: {receivedBlock.Code}");
+                if (receivedBlock.Code.ToString().Contains("game:torch-basic-lit")) return;
             }
         }
         if (extendedLogs) Debug.Log($"{Block.Code} check-near-torchs: OK, config: {torchWillDisableSpawn}");
