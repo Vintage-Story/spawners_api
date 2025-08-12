@@ -28,9 +28,11 @@ class Overwrite
 [HarmonyPatchCategory("spawnersapi")]
 class DamageInteraction
 {
+    [HarmonyPatch(typeof(AiTaskMeleeAttack))]
+    [HarmonyPatch(MethodType.Constructor)]
+    [HarmonyPatch(new Type[] { typeof(EntityAgent), typeof(JsonObject), typeof(JsonObject) })]
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(AiTaskMeleeAttack), "LoadConfig")]
-    public static void LoadConfig(AiTaskMeleeAttack __instance, ref JsonObject taskConfig, JsonObject aiConfig)
+    public static void LoadConfig(AiTaskMeleeAttack __instance, EntityAgent entity, ref JsonObject taskConfig, JsonObject aiConfig)
     {
         if (__instance.entity == null) return;
         if (__instance.entity.Attributes == null) return;

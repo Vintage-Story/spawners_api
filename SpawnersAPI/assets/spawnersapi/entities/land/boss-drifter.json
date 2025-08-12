@@ -1,216 +1,159 @@
 {
-	"code": "boss-drifter",
-	"class": "EntityDrifter",
-	"canClimb": true,
-	"hitboxSize": {
-		"x": 0.6,
-		"y": 1.3
-	},
-	"deadHitboxSize": {
-		"x": 0.6,
-		"y": 1
-	},
-	"eyeHeight": 1.3,
-	"attributes": {
-		"killedByInfoText": "deadcreature-vile",
-		"glitchAffected": true,
-		"glitchFlicker": true,
-		"reckless": true,
-		"extraSplashParticlesMul": 4,
-		"spawnCloserDuringLowStability": true,
-		"onDeathStabilityRecoveryByType": {
+	code: "boss-drifter",
+	class: "EntityDrifter",
+	tags: ["rust-creature", "habitat-land"],
+	variantgroups: [
+		{ code: "type", states: ["normal", "deep", "tainted", "corrupt", "nightmare", "double-headed"]}
+	],
+	weight: 140,
+	canClimb: true,
+	hitboxSize: { x: 0.6, y: 1.3 },
+	deadHitboxSize: { x: 0.6, y: 1 },
+	eyeHeight: 1.3,
+	attributes: {
+		allowInDevastationArea: true,
+		killedByInfoText: "deadcreature-vile",
+		glitchAffected: true,
+		glitchFlicker: true,
+		reckless: true,
+		extraSplashParticlesMul: 4,
+		spawnCloserDuringLowStability: true,
+		onDeathStabilityRecoveryByType: {
 			"drifter-normal": 0.01,
 			"drifter-deep": 0.015,
 			"drifter-tainted": 0.02,
 			"drifter-corrupt": 0.025,
 			"drifter-nightmare": 0.3,
-			"drifter-double-headed": 0.35
+			"drifter-double-headed": 0.35,
+		},
+
+		// Configuration for crawling drifters
+		oddsToAlter: 5, // chance to alter a drifter is one in this value
+		dieAnimationCode: "die",
+		alternativeDieAnimationCode: "crawldie",
+		idleAnimationCode: "idle",
+		alternativeIdleAnimationCode: "crawlidle",
+		alternativeCollisionBox: [0.9, 0.6],
+		alternativeCanClimb: false,
+		animationsRemapping: {
+			"idle": "crawlidle" ,
+			"standwalk": "crawlwalk",
+			"standlowwalk": "crawlwalk",
+			"standrun": "crawlrun",
+			"standidle": "crawlidle",
+			"standdespair": "crawlemote",
+			"standcry": "crawlemote",
+			"standhurt": "crawlhurt",
+			"standdie": "crawldie"
 		}
 	},
-	"variantgroups": [
-		{
-			"code": "type",
-			"states": [
-				"normal",
-				"deep",
-				"tainted",
-				"corrupt",
-				"nightmare",
-				"double-headed"
-			]
-		}
-	],
-	"drops": [],
-	"client": {
-		"renderer": "Shape",
-		"pitchStep": false,
-		"shapeByType": {
+	drops: [],
+	client: {
+		renderer: "Shape",
+		pitchStep: false,
+		shapeByType: {
+			"*-normal": { base: "game:entity/lore/drifter/surface" },
+			"*-deep": { base: "game:entity/lore/drifter/surface" },
+			
+			"*-tainted": { base: "game:entity/lore/drifter/spiked1", alternates: [{ base: "game:entity/lore/drifter/spiked2" }] },
+			"*-corrupt": { base: "game:entity/lore/drifter/deerhorn" },
+			"*-nightmare": { base: "game:entity/lore/drifter/knife" },
+			"*-double-headed": { base: "game:entity/lore/drifter/double-headed" },
+		},
+		texturesByType: {
 			"*-normal": {
-				"base": "game:entity/land/drifter/surface"
+				"skin": { base: "game:entity/lore/drifter/surface1", alternates: [ { base: "game:entity/lore/drifter/surface2" }, {base: "game:entity/lore/drifter/surface3" }] },
 			},
 			"*-deep": {
-				"base": "game:entity/land/drifter/surface"
-			},
-			"*-tainted": {
-				"base": "game:entity/land/drifter/spiked1",
-				"alternates": [
-					{
-						"base": "game:entity/land/drifter/spiked2"
-					}
-				]
-			},
-			"*-corrupt": {
-				"base": "game:entity/land/drifter/deerhorn"
-			},
-			"*-nightmare": {
-				"base": "game:entity/land/drifter/knife"
+				"skin": { base: "game:entity/lore/drifter/deep1", alternates: [ { base: "game:entity/lore/drifter/deep2" } ] },
 			},
 			"*-double-headed": {
-				"base": "game:entity/land/drifter/double-headed"
+				"skin": { base: "game:entity/lore/drifter/double" },
 			}
 		},
-		"texturesByType": {
-			"*-normal": {
-				"skin": {
-					"base": "game:entity/drifter/surface1",
-					"alternates": [
-						{
-							"base": "game:entity/drifter/surface2"
-						},
-						{
-							"base": "game:entity/drifter/surface3"
-						}
-					]
-				}
-			},
-			"*-deep": {
-				"skin": {
-					"base": "game:entity/drifter/deep1",
-					"alternates": [
-						{
-							"base": "game:entity/drifter/deep2"
-						}
-					]
-				}
-			},
-			"*-double-headed": {
-				"skin": {
-					"base": "game:entity/drifter/double"
-				}
-			}
-		},
-		"behaviors": [
-			{
-				"code": "repulseagents"
-			},
-			{
-				"code": "controlledphysics",
-				"stepHeight": 1.1251
-			},
-			{
-				"code": "floatupwhenstuck",
-				"onlyWhenDead": true
-			},
-			{
-				"code": "interpolateposition"
-			},
-			{
-				"code": "harvestable",
-				"duration": 2
-			}
+		behaviors: [
+			{ code: "repulseagents" }, 
+			{ code: "controlledphysics", stepHeight: 1.1251 }, 
+			{ code: "floatupwhenstuck", onlyWhenDead: true },
+			{ code: "interpolateposition" },
+			{ code: "harvestable", duration: 2 }
 		],
-		"animations": [
+		animations: [
 			{
-				"code": "hurt",
-				"animation": "standhurt",
-				"animationSpeed": 2,
-				"weight": 10,
-				"blendMode": "AddAverage"
+				code: "hurt",
+				animation: "standhurt", 
+				animationSpeed: 2,
+				weight: 10,
+				blendMode: "AddAverage" 
 			},
 			{
-				"code": "die",
-				"animation": "standdie",
-				"animationSpeed": 0.7,
-				"weight": 10,
-				"blendMode": "Average",
-				"triggeredBy": {
-					"onControls": [
-						"dead"
-					]
-				}
+				code: "die",
+				animation: "standdie", 
+				animationSpeed: 0.7,
+				weight: 10,
+				blendMode: "Average",
+				triggeredBy: { onControls: ["dead"] }
+			},
+			{ 
+				code: "idle",
+				animation: "standidle",
+				blendMode: "Average", 
+				triggeredBy: { defaultAnim: true },
 			},
 			{
-				"code": "idle",
-				"animation": "standidle",
-				"blendMode": "Average",
-				"triggeredBy": {
-					"defaultAnim": true
-				}
+				code: "crawlhurt",
+				animation: "crawlhurt", 
+				animationSpeed: 2,
+				weight: 10,
+				blendMode: "AddAverage" 
 			},
 			{
-				"code": "crawlhurt",
-				"animation": "crawlhurt",
-				"animationSpeed": 2,
-				"weight": 10,
-				"blendMode": "AddAverage"
+				code: "crawldie",
+				animation: "crawldie", 
+				animationSpeed: 0.7,
+				weight: 10,
+				blendMode: "Average",
+				triggeredBy: { onControls: ["dead"] }
+			},
+			{ 
+				code: "crawlidle", 
+				animation: "crawlidle",
+				blendMode: "Average",
+				weight: 0.1,
+				easeoutSpeed: 10
+			},
+			{ 
+				code: "standwalk", 
+				animation: "standwalk",
+				blendMode: "Average"
+			},
+			{ 
+				code: "standrun", 
+				animation: "standrun",
+				blendMode: "Average"
 			},
 			{
-				"code": "crawldie",
-				"animation": "crawldie",
-				"animationSpeed": 0.7,
-				"weight": 10,
-				"blendMode": "Average",
-				"triggeredBy": {
-					"onControls": [
-						"dead"
-					]
-				}
+				code: "crawlwalk", 
+				animation: "crawlwalk",
+				blendMode: "Average"
 			},
 			{
-				"code": "crawlidle",
-				"animation": "crawlidle",
-				"blendMode": "Average",
-				"weight": 0.1,
-				"easeoutSpeed": 10
+				code: "crawlrun", 
+				animation: "crawlrun",
+				blendMode: "Average"
 			},
 			{
-				"code": "standwalk",
-				"animation": "standwalk",
-				"blendMode": "Average"
-			},
-			{
-				"code": "standrun",
-				"animation": "standrun",
-				"blendMode": "Average"
-			},
-			{
-				"code": "crawlwalk",
-				"animation": "crawlwalk",
-				"blendMode": "Average"
-			},
-			{
-				"code": "crawlrun",
-				"animation": "crawlrun",
-				"blendMode": "Average"
-			},
-			{
-				"code": "crawlemote",
-				"animation": "crawlemote"
+				code: "crawlemote", 
+				animation: "crawlemote"
 			}
 		]
 	},
-	"server": {
-		"behaviors": [
-			{
-				"code": "repulseagents"
-			},
-			{
-				"code": "controlledphysics",
-				"stepHeight": 1.1251
-			},
-			{
-				"code": "health",
-				"currenthealthByType": {
+	server: {
+		behaviors: [
+			{ code: "repulseagents" }, 
+			{ code: "controlledphysics", stepHeight: 1.1251 },
+			{ code: "health", 
+				currenthealthByType: {
 					"*-normal": 12,
 					"*-deep": 16,
 					"*-tainted": 22,
@@ -218,7 +161,7 @@
 					"*-nightmare": 40,
 					"*-double-headed": 54
 				},
-				"maxhealthByType": {
+				maxhealthByType: {
 					"*-normal": 12,
 					"*-deep": 16,
 					"*-tainted": 22,
@@ -227,91 +170,69 @@
 					"*-double-headed": 54
 				}
 			},
+			{ code: "deaddecay", hoursToDecay: 3 },
+			{ code: "floatupwhenstuck", onlyWhenDead: true },
+			{ code: "despawn", minPlayerDistance: 32, minSeconds: 30 },
+			{ code: "despawn", minPlayerDistance: 64, minSeconds: 6 },
 			{
-				"code": "deaddecay",
-				"hoursToDecay": 3
-			},
-			{
-				"code": "floatupwhenstuck",
-				"onlyWhenDead": true
-			},
-			{
-				"code": "despawn",
-				"minPlayerDistance": 32,
-				"minSeconds": 30
-			},
-			{
-				"code": "despawn",
-				"minPlayerDistance": 64,
-				"minSeconds": 6
-			},
-			{
-				"code": "emotionstates",
-				"states": [
-					{
-						"code": "fleeondamage",
-						"duration": 10,
-						"chanceByType": {
+				code: "emotionstates",
+				states: [  {
+						code: "fleeondamage", 
+						duration: 10,
+						chanceByType: {
 							"*-normal": 0.15,
 							"*-deep": 0.07,
 							"*-tainted": 0.03,
 							"*-corrupt": 0.015,
 							"*-nightmare": 0.01,
-							"*-double-headed": 0.01
+							"*-double-headed": 0.01,
 						},
-						"slot": 0,
-						"priority": 1,
-						"accumType": "max"
-					}
-				]
+						slot: 0, 
+						priority: 1, 
+						accumType: "max" 
+					} ]
 			},
 			{
-				"code": "taskai",
-				"aitasks": [
+				code: "taskai",
+				aitasks: [
 					{
-						"code": "fleeentity",
-						"entityCodes": [
-							"player"
-						],
-						"priority": 3,
-						"movespeed": 0.018,
-						"seekingRange": 20,
-						"fleeingDistance": 64,
-						"fleeDurationMs": 9999999,
-						"minDayLightByType": {
+						code: "fleeentity",
+						entityCodes: ["player"],
+						priority: 3,
+						movespeed: 0.018,
+						seekingRange: 20,
+						fleeingDistance: 64,
+						fleeDurationMs: 9999999,
+						minDayLightByType: {
 							"*-normal": 0.925,
 							"*-deep": 0.97,
 							"*-tainted": 2,
 							"*-corrupt": 2,
 							"*-nightmare": 2,
-							"*-double-headed": 2
+							"*-double-headed": 2,
 						},
-						"ignoreDeepDayLight": true,
-						"cancelOnHurt": true,
-						"executionChance": 0.003,
-						"animation": "standrun",
-						"animationSpeed": 1.3
+						ignoreDeepDayLight: true,
+						cancelOnHurt: true,
+						executionChance: 0.003,
+						animation: "standrun",
+						animationSpeed: 1.3
 					},
 					{
-						"code": "fleeentity",
-						"entityCodes": [
-							"player"
-						],
-						"priority": 2.5,
-						"movespeed": 0.018,
-						"seekingRange": 12,
-						"cancelOnHurt": true,
-						"animation": "standrun",
-						"animationSpeed": 1.3,
-						"whenInEmotionState": "fleeondamage"
+						code: "fleeentity",
+						entityCodes: ["player", "villager-*"],
+						priority: 2.5,
+						movespeed: 0.018,
+						seekingRange: 12,
+						cancelOnHurt: true,
+						animation: "standrun",
+						animationSpeed: 1.3,
+						whenInEmotionState: "fleeondamage"
 					},
 					{
-						"code": "meleeattack",
-						"entityCodes": [
-							"player"
-						],
-						"priority": 2,
-						"damageByType": {
+						code: "meleeattack",
+						entityCodes: ["player", "villager-*"],
+						priority: 2,
+						damageByType: {
 							"*-normal": 2.5,
 							"*-deep": 4,
 							"*-tainted": 8,
@@ -319,7 +240,7 @@
 							"*-nightmare": 20,
 							"*-double-headed": 24
 						},
-						"damageTierByType": {
+						damageTierByType: {
 							"*-normal": 0,
 							"*-deep": 1,
 							"*-tainted": 2,
@@ -327,327 +248,265 @@
 							"*-nightmare": 4,
 							"*-double-headed": 4
 						},
-						"damageTypeByType": {
+						damageTypeByType: {
 							"*-corrupt": "SlashingAttack",
 							"*-nightmare": "SlashingAttack",
 							"*-double-headed": "SlashingAttack"
 						},
-						"mincooldown": 500,
-						"maxcooldown": 1750,
-						"damagePlayerAtMs": 400,
-						"attackDurationMs": 1000,
-						"animation": "standattack",
-						"animationSpeed": 1.5,
-						"sound": "game:creature/drifter-hit",
-						"soundStartMs": 400
+						mincooldown: 500, 
+						maxcooldown: 1750, 
+						damagePlayerAtMs: 400,
+						attackDurationMs: 1000,
+						animation: "standattack",
+						animationSpeed: 1.5,
+						sound: "creature/drifter-hit",
+						soundStartMs: 400
 					},
 					{
-						"code": "throwatentity",
-						"entityCodes": [
-							"player"
-						],
-						"priority": 1.5,
-						"priorityForCancel": 9,
-						"mincooldown": 1000,
-						"maxcooldown": 10000,
-						"durationMs": 1200,
-						"releaseAtMs": 700,
-						"yawInaccuracy": 0.33,
-						"seekingRange": 15,
-						"animationSpeed": 1.5,
-						"animation": "standthrowleft"
+						code: "throwatentity",
+						entityCodes: ["player"],
+						priority: 1.5,
+						priorityForCancel: 9,
+						mincooldown: 1000, 
+						maxcooldown: 10000, 
+						durationMs: 1200,
+						releaseAtMs: 700,
+						yawInaccuracy: 0.33,
+						seekingRange: 15,
+						animationSpeed: 1.5,
+						animation: "standthrowleft",
+						projectileDamage: 1,
+						projectileDamageTier: 0
 					},
 					{
-						"code": "seekentity",
-						"entityCodes": [
-							"player"
-						],
-						"priority": 1.5,
-						"mincooldown": 400,
-						"maxcooldown": 800,
-						"movespeed": 0.018,
-						"seekingRange": 20,
-						"animationSpeed": 1.3,
-						"animation": "standrun",
-						"sound": "game:creature/drifter-aggro"
+						code: "seekentity",
+						entityCodes: ["player", "villager-*"],
+						priority: 1.5,
+						mincooldown: 400, 
+						maxcooldown: 800, 
+						movespeed: 0.018,
+						seekingRange: 20,
+						animationSpeed: 1.3,
+						animation: "standrun",
+						sound: "creature/drifter-aggro"
 					},
 					{
-						"code": "idle",
-						"priority": 1.2,
-						"priorityForCancel": 1.35,
-						"minduration": 4000,
-						"maxduration": 6000,
-						"chance": 0.001,
-						"initialMinCoolDown": 2000,
-						"initialMaxCoolDown": 150000,
-						"mincooldown": 300000,
-						"maxcooldown": 10000000,
-						"animation": "standdespair",
-						"animationSpeed": 1.25
+						code: "idle",
+						priority: 1.2,
+						priorityForCancel: 1.35,
+						minduration: 4000,
+						maxduration: 6000,
+						chance: 0.001,
+						initialMinCoolDown: 2000,
+						initialMaxCoolDown: 150000,
+						mincooldown: 300000,
+						maxcooldown: 10000000,
+						animation: "standdespair",
+						animationSpeed: 1.25
 					},
 					{
-						"code": "idle",
-						"priority": 1.2,
-						"priorityForCancel": 2.1,
-						"minduration": 4000,
-						"maxduration": 6000,
-						"chance": 0.001,
-						"initialMinCoolDown": 2000,
-						"initialMaxCoolDown": 150000,
-						"mincooldown": 300000,
-						"maxcooldown": 10000000,
-						"animation": "standcry",
-						"animationSpeed": 1
+						code: "idle",
+						priority: 1.2,
+						priorityForCancel: 2.1,
+						minduration: 4000,
+						maxduration: 6000,
+						chance: 0.001,
+						initialMinCoolDown: 2000,
+						initialMaxCoolDown: 150000,
+						mincooldown: 300000,
+						maxcooldown: 10000000,
+						animation: "standcry",
+						animationSpeed: 1
 					},
 					{
-						"code": "wander",
-						"priority": 1.0,
-						"movespeed": 0.01,
-						"animationSpeed": 1.2,
-						"animation": "standwalk",
-						"preferredLightLevel": 15
+						code: "wander", 
+						priority: 1.0, 
+						movespeed: 0.01,
+						animationSpeed: 1.2,
+						animation: "standwalk",
+						preferredLightLevel: 15
 					},
 					{
-						"code": "wander",
-						"priority": 0.99,
-						"priorityForCancel": 1.1,
-						"movespeed": 0.008,
-						"animationSpeed": 1.1,
-						"animation": "standlowwalk",
-						"preferredLightLevel": 15
+						code: "wander", 
+						priority: 0.99,
+						priorityForCancel: 1.1,
+						movespeed: 0.008,
+						animationSpeed: 1.1,
+						animation: "standlowwalk",
+						preferredLightLevel: 15
 					},
 					{
-						"code": "getoutofwater",
-						"priority": 1.4,
-						"movespeed": 0.015,
-						"animation": "standwalk",
-						"animationSpeed": 1.55
+						code: "getoutofwater",
+						priority: 1.4,
+						movespeed: 0.015,
+						animation: "standwalk",
+						animationSpeed: 1.55
 					},
-					{
-						"code": "lookaround",
-						"priority": 0.5
+					{ 
+						code: "lookaround", 
+						priority: 0.5
 					}
 				]
 			},
-			{
-				"code": "harvestable",
-				"duration": 2,
-				"fixedweight": true,
-				"dropsByType": {
-					"*-normal": [
-						{
-							"type": "item",
-							"code": "gear-temporal",
-							"quantity": {
-								"avg": 0.02666,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "flaxfibers",
-							"quantity": {
-								"avg": 0.2,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "gear-rusty",
-							"dropModbyStat": "rustyGearDropRate",
-							"quantity": {
-								"avg": 0.01,
-								"var": 0
-							}
-						}
-					],
-					"*-deep": [
-						{
-							"type": "item",
-							"code": "gear-temporal",
-							"quantity": {
-								"avg": 0.033325,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "gear-rusty",
-							"dropModbyStat": "rustyGearDropRate",
-							"quantity": {
-								"avg": 0.03,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "flaxfibers",
-							"quantity": {
-								"avg": 0.4,
-								"var": 0
-							}
-						}
-					],
-					"*-tainted": [
-						{
-							"type": "item",
-							"code": "gear-temporal",
-							"quantity": {
-								"avg": 0.03999,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "gear-rusty",
-							"dropModbyStat": "rustyGearDropRate",
-							"quantity": {
-								"avg": 0.07,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "flaxfibers",
-							"quantity": {
-								"avg": 0.6,
-								"var": 0
-							}
-						}
-					],
-					"*-corrupt": [
-						{
-							"type": "item",
-							"code": "gear-temporal",
-							"quantity": {
-								"avg": 0.046655,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "gear-rusty",
-							"dropModbyStat": "rustyGearDropRate",
-							"quantity": {
-								"avg": 0.1,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "flaxfibers",
-							"quantity": {
-								"avg": 0.8,
-								"var": 0
-							}
-						}
-					],
-					"*-nightmare": [
-						{
-							"type": "item",
-							"code": "gear-temporal",
-							"quantity": {
-								"avg": 0.05332,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "gear-rusty",
-							"dropModbyStat": "rustyGearDropRate",
-							"quantity": {
-								"avg": 0.2,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "flaxfibers",
-							"quantity": {
-								"avg": 1,
-								"var": 0
-							}
-						}
-					],
-					"*-double-headed": [
-						{
-							"type": "item",
-							"code": "gear-temporal",
-							"quantity": {
-								"avg": 1,
-								"var": 0.4
-							}
-						},
-						{
-							"type": "item",
-							"code": "gear-rusty",
-							"dropModbyStat": "rustyGearDropRate",
-							"quantity": {
-								"avg": 5,
-								"var": 2.5
-							}
-						},
-						{
-							"type": "item",
-							"code": "flaxfibers",
-							"quantity": {
-								"avg": 2,
-								"var": 0
-							}
-						},
-						{
-							"type": "item",
-							"code": "stackrandomizer-alljonas",
-							"quantity": {
-								"avg": 0.4,
-								"var": 0
-							}
-						}
-					]
-				}
-			}
-		]
-		// No necessary spawn conditions for the boss drifter, because it only spawn in spawners
-		// 	spawnconditions: {
-		// 		runtime: {
-		// 			group: "hostile",
-		// 			maxQuantityBy"Type": {
-		// 				"*-normal": 10,
-		// 				"*-deep": 4,
-		// 				"*-tainted": 3,
-		// 				"*-corrupt": 3,
-		// 				"*-nightmare": 3,
-		// 				"*-double-headed": 0
-		// 			},
-		// 			maxLightLevel: 7,
-		// 			chance: 0.1,
-		// 			lightLevel"Type": "MaxTimeOfDayLight",
-		// 			groupSizeBy"Type": {
-		// 				"*-normal": { dist: "invexp", "avg": 1, "var": 3 },
-		// 				"*": { dist: "uniform", "avg": 1.5, "var": 0.5 },
-		// 			},
-		// 			insideBlockCodes: ["air", "tallgrass-*", "loosestones-*"],
-		// 			minYBy"Type": {
-		// 				"*-normal": 0.85,
-		// 				"*-deep": 0.22,
-		// 				"*-tainted": 0.1,
-		// 				"*-corrupt": 0,
-		// 				"*-nightmare": 0
-		// 			},
-		// 			maxYBy"Type": {
-		// 				"*-normal": 2,
-		// 				"*-deep": 0.89,
-		// 				"*-tainted": 0.55,
-		// 				"*-corrupt": 0.35,
-		// 				"*-nightmare": 0.23
-		// 			}
+			{ code: "harvestable", duration: 2, fixedweight: true, dropsByType: {
+				"*-normal": [
+					{
+						type: "item",
+						code: "gear-temporal",
+						quantity: { avg: 0.02666, var: 0 }
+					},
+					{
+						type: "item",
+						code: "flaxfibers",
+						quantity: { avg: 0.2, var: 0 }
+					},
+					{
+						type: "item",
+						code: "gear-rusty",
+						dropModbyStat: "rustyGearDropRate",
+						quantity: { avg: 0.01, var: 0 }
+					}
+				],
+				"*-deep": [
+					{
+						type: "item",
+						code: "gear-temporal",
+						quantity: { avg: 0.033325, var: 0 }
+					},
+					{
+						type: "item",
+						code: "gear-rusty",
+						dropModbyStat: "rustyGearDropRate",
+						quantity: { avg: 0.03, var: 0 }
+					},
+					{
+						type: "item",
+						code: "flaxfibers",
+						quantity: { avg: 0.4, var: 0 }
+					}
+				],		
+				"*-tainted": [
+					{
+						type: "item",
+						code: "gear-temporal",
+						quantity: { avg: 0.03999, var: 0 }
+					},
+					{
+						type: "item",
+						code: "gear-rusty",
+						dropModbyStat: "rustyGearDropRate",
+						quantity: { avg: 0.07, var: 0 }
+					},
+					{
+						type: "item",
+						code: "flaxfibers",
+						quantity: { avg: 0.6, var: 0 }
+					}
+				],
+				"*-corrupt": [
+					{
+						type: "item",
+						code: "gear-temporal",
+						quantity: { avg: 0.046655, var: 0 }
+					},
+					{
+						type: "item",
+						code: "gear-rusty",
+						dropModbyStat: "rustyGearDropRate",
+						quantity: { avg: 0.1, var: 0 }
+					},
+					{
+						type: "item",
+						code: "flaxfibers",
+						quantity: { avg: 0.8, var: 0 }
+					}
+				],
+				"*-nightmare": [
+					{
+						type: "item",
+						code: "gear-temporal",
+						quantity: { avg: 0.05332, var: 0 }
+					},
+					{
+						type: "item",
+						code: "gear-rusty",
+						dropModbyStat: "rustyGearDropRate",
+						quantity: { avg: 0.2, var: 0 }
+					},
+					{
+						type: "item",
+						code: "flaxfibers",
+						quantity: { avg: 1, var: 0 }
+					}
+				],
+				"*-double-headed": [
+					{
+						type: "item",
+						code: "gear-temporal",
+						quantity: { avg: 1, var: 0.4 }
+					},
+					{
+						type: "item",
+						code: "gear-rusty",
+						dropModbyStat: "rustyGearDropRate",
+						quantity: { avg: 5, var: 2.5 }
+					},
+					{
+						type: "item",
+						code: "flaxfibers",
+						quantity: { avg: 2, var: 0 }
+					},
+					{
+						type: "item",
+						code: "stackrandomizer-alljonas",
+						quantity: { avg: 0.4, var: 0 }
+					}
+				],
+				},
+			},
+			{ code: "ripharvestable" },
+			{ code: "entitystatetags" }
+		],
+		// spawnconditions: {
+		// 	runtime: {
+		// 		group: "hostile",
+		// 		maxQuantityByType: {
+		// 			"*-normal": 10,
+		// 			"*-deep": 4,
+		// 			"*-tainted": 3,
+		// 			"*-corrupt": 3,
+		// 			"*-nightmare": 3,
+		// 			"*-double-headed": 0
+		// 		},
+		// 		maxLightLevel: 7,
+		// 		chance: 0.1,
+		// 		lightLevelType: "OnlyBlockLight",
+		// 		groupSizeByType: {
+		// 			"*-normal": { dist: "invexp", avg: 1, var: 3 },
+		// 			"*": { dist: "uniform", avg: 1.5, var: 0.5 },
+		// 		},
+		// 		insideBlockCodes: ["air", "tallgrass-*", "loosestones-*"],
+		// 		minYByType: {
+		// 			"*-normal": 0.85,
+		// 			"*-deep": 0.22,
+		// 			"*-tainted": 0.1,
+		// 			"*-corrupt": 0,
+		// 			"*-nightmare": 0
+		// 		},
+		// 		maxYByType: {
+		// 			"*-normal": 2,
+		// 			"*-deep": 0.89,
+		// 			"*-tainted": 0.55,
+		// 			"*-corrupt": 0.35,
+		// 			"*-nightmare": 0.23
 		// 		}
 		// 	}
+		// }
 	},
-	"idleSoundRange": 14,
-	"sounds": {
-		"hurt": "game:creature/drifter-hurt",
-		"death": "game:creature/drifter-death",
-		"idle": "game:creature/drifter-idle"
+	idleSoundRange: 14,
+	sounds: {
+		hurt: "creature/drifter-hurt",
+		death: "creature/drifter-death",
+		idle: "creature/drifter-idle"
 	}
 }
