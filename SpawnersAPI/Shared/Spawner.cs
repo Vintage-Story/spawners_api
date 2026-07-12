@@ -452,10 +452,9 @@ public class Spawner : BlockEntity
                 // Setting the variable to be increased the damage
                 entity.Attributes.SetDouble("SpawnersAPIDamageIncrease", damageAdditional);
                 entity.Attributes.SetDouble("SpawnersAPIHealthIncrease", healthAdditional);
-                entity.ServerPos.X = spawnX + 0.5;
-                entity.ServerPos.Y = spawnY;
-                entity.ServerPos.Z = spawnZ + 0.5;
-                entity.Pos.SetPos(entity.ServerPos);
+                entity.Pos.X = spawnX + 0.5;
+                entity.Pos.Y = spawnY;
+                entity.Pos.Z = spawnZ + 0.5;
                 entity.Attributes.SetBool("SpawnersAPI_Is_From_Spawner", true);
                 // Spawning
                 Api.World.SpawnEntity(entity);
