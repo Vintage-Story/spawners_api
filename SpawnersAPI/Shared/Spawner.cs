@@ -586,10 +586,13 @@ public class Spawner : BlockEntity
 
     private void UpdateEntityStatus(Entity entity)
     {
-        // Changing Health Stats
         EntityBehaviorHealth entityLifeStats = entity.GetBehavior<EntityBehaviorHealth>();
-        entityLifeStats.BaseMaxHealth += (float)(entityLifeStats.BaseMaxHealth * healthAdditional);
-        entityLifeStats.Health += (float)(entityLifeStats.Health * healthAdditional);
+        if (entityLifeStats == null) return;
+        if (entityLifeStats.BaseMaxHealth <= 0f || entityLifeStats.MaxHealth <= 0f || entityLifeStats.Health <= 0f) return;
+
+        entityLifeStats.BaseMaxHealth *= (float)healthAdditional;
+        entityLifeStats.MaxHealth *= (float)healthAdditional;
+        entityLifeStats.Health *= (float)healthAdditional;
 
         // Looking for the damage? is on Overwrite.cs
     }

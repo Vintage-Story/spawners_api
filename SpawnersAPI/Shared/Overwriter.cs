@@ -41,7 +41,7 @@ class DamageInteraction
         if (damage == 0f || __instance.entity.Attributes.GetDouble("SpawnersAPIDamageIncrease") == 0) return;
 
         // Increase the damage
-        damage += (float)(damage * __instance.entity.Attributes.GetDouble("SpawnersAPIDamageIncrease"));
+        damage *= (float)__instance.entity.Attributes.GetDouble("SpawnersAPIDamageIncrease");
 
         string data = taskConfig.Token?.ToString();
 
