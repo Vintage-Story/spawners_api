@@ -1,7 +1,5 @@
-CakeBuild
 .vscode
 Releases
-SpawnersAPI/bin
-SpawnersAPI/obj
+*bin
+*obj
 build.ps1
-SpawnersAPI.sln

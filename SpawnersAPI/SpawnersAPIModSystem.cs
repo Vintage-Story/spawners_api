@@ -5,7 +5,7 @@ using Vintagestory.API.Server;
 
 namespace SpawnersAPI;
 
-public class Initialization : ModSystem
+public class SpawnersAPIModSystem : ModSystem
 {
     readonly Overwrite overwriter = new();
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -39,7 +38,7 @@ public class Spawner : BlockEntity
     private int yPlayerDistanceToSpawn = 16;
     private int zPlayerDistanceToSpawn = 16;
     private int maxChancesToFindAValidBlockToSpawn = 30;
-    private JArray spawnerDrops = [];
+    private List<SpawnerDropGroupConfiguration> spawnerDrops = [];
     private bool extendedLogs = false;
     #endregion
 
@@ -52,175 +51,31 @@ public class Spawner : BlockEntity
 
         #region config-load
         spawnerID = Block.Code.ToString().Replace("spawnersapi:spawner-", "");
-        try
-        {
-            Dictionary<string, object> baseConfigs = Api.Assets.Get(new AssetLocation($"spawnersapi:config/{spawnerID}.json")).ToObject<Dictionary<string, object>>();
-            { //torchWillDisableSpawn
-                if (baseConfigs.TryGetValue("torchWillDisableSpawn", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: torchWillDisableSpawn is null");
-                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: torchWillDisableSpawn is not boolean is {value.GetType()}");
-                    else torchWillDisableSpawn = (bool)value;
-                else Debug.Log("CONFIGURATION ERROR: torchWillDisableSpawn not set");
-            }
-            { //spawnOnlyInGround
-                if (baseConfigs.TryGetValue("spawnOnlyInGround", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: spawnOnlyInGround is null");
-                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: spawnOnlyInGround is not boolean is {value.GetType()}");
-                    else spawnOnlyInGround = (bool)value;
-                else Debug.Log("CONFIGURATION ERROR: spawnOnlyInGround not set");
-            }
-            { //spawnOnlyWith2Heights
-                if (baseConfigs.TryGetValue("spawnOnlyWith2Heights", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: spawnOnlyWith2Heights is null");
-                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: spawnOnlyWith2Heights is not boolean is {value.GetType()}");
-                    else spawnOnlyWith2Heights = (bool)value;
-                else Debug.Log("CONFIGURATION ERROR: spawnOnlyWith2Heights not set");
-            }
-            { //droppable
-                if (baseConfigs.TryGetValue("droppable", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: droppable is null");
-                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: droppable is not boolean is {value.GetType()}");
-                    else droppable = (bool)value;
-                else Debug.Log("CONFIGURATION ERROR: droppable not set");
-            }
-            { //freezeOnAllEntitiesSpawned
-                if (baseConfigs.TryGetValue("freezeOnAllEntitiesSpawned", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: freezeOnAllEntitiesSpawned is null");
-                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: freezeOnAllEntitiesSpawned is not boolean is {value.GetType()}");
-                    else freezeOnAllEntitiesSpawned = (bool)value;
-                else Debug.Log("CONFIGURATION ERROR: freezeOnAllEntitiesSpawned not set");
-            }
-            { //healthAdditional
-                if (baseConfigs.TryGetValue("healthAdditional", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: healthAdditional is null");
-                    else if (value is not double) Debug.Log($"CONFIGURATION ERROR: healthAdditional is not double is {value.GetType()}");
-                    else healthAdditional = (double)value;
-                else Debug.Log("CONFIGURATION ERROR: healthAdditional not set");
-            }
-            { //damageAdditional
-                if (baseConfigs.TryGetValue("damageAdditional", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: damageAdditional is null");
-                    else if (value is not double) Debug.Log($"CONFIGURATION ERROR: damageAdditional is not double is {value.GetType()}");
-                    else damageAdditional = (double)value;
-                else Debug.Log("CONFIGURATION ERROR: damageAdditional not set");
-            }
-            { //entitiesToSpawn
-                if (baseConfigs.TryGetValue("entitiesToSpawn", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: entitiesToSpawn is null");
-                    else if (value is not JArray) Debug.Log($"CONFIGURATION ERROR: entitiesToSpawn is not List is {value.GetType()}");
-                    else entitiesToSpawn = (value as JArray).ToObject<List<string>>();
-                else Debug.Log("CONFIGURATION ERROR: entitiesToSpawn not set");
-            }
-            { //lightLevel1
-                if (baseConfigs.TryGetValue("lightLevel1", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel1 is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel1 is not int is {value.GetType()}");
-                    else lightLevel1 = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: lightLevel1 not set");
-            }
-            { //lightLevel2
-                if (baseConfigs.TryGetValue("lightLevel2", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel2 is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel2 is not int is {value.GetType()}");
-                    else lightLevel2 = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: lightLevel2 not set");
-            }
-            { //lightLevel3
-                if (baseConfigs.TryGetValue("lightLevel3", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel3 is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel3 is not int is {value.GetType()}");
-                    else lightLevel3 = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: lightLevel3 not set");
-            }
-            { //lightLevel4
-                if (baseConfigs.TryGetValue("lightLevel4", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: lightLevel4 is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: lightLevel4 is not int is {value.GetType()}");
-                    else lightLevel4 = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: lightLevel4 not set");
-            }
-            { //maxSpawnedEntities
-                if (baseConfigs.TryGetValue("maxSpawnedEntities", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: maxSpawnedEntities is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxSpawnedEntities is not int is {value.GetType()}");
-                    else maxSpawnedEntities = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: maxSpawnedEntities not set");
-            }
-            { //maxSpawnedEntities
-                if (baseConfigs.TryGetValue("maxEntitiesSpawnAtOnce", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: maxEntitiesSpawnAtOnce is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxEntitiesSpawnAtOnce is not int is {value.GetType()}");
-                    else maxEntitiesSpawnAtOnce = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: maxEntitiesSpawnAtOnce not set");
-            }
-            { //xSpawnMaxDistance
-                if (baseConfigs.TryGetValue("xSpawnMaxDistance", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: xSpawnMaxDistance is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: xSpawnMaxDistance is not int is {value.GetType()}");
-                    else xSpawnMaxDistance = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: xSpawnMaxDistance not set");
-            }
-            { //ySpawnMaxDistance
-                if (baseConfigs.TryGetValue("ySpawnMaxDistance", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: ySpawnMaxDistance is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: ySpawnMaxDistance is not int is {value.GetType()}");
-                    else ySpawnMaxDistance = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: ySpawnMaxDistance not set");
-            }
-            { //zSpawnMaxDistance
-                if (baseConfigs.TryGetValue("zSpawnMaxDistance", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: zSpawnMaxDistance is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: zSpawnMaxDistance is not int is {value.GetType()}");
-                    else zSpawnMaxDistance = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: zSpawnMaxDistance not set");
-            }
-            { //xPlayerDistanceToSpawn
-                if (baseConfigs.TryGetValue("xPlayerDistanceToSpawn", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: xPlayerDistanceToSpawn is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: xPlayerDistanceToSpawn is not int is {value.GetType()}");
-                    else xPlayerDistanceToSpawn = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: xPlayerDistanceToSpawn not set");
-            }
-            { //yPlayerDistanceToSpawn
-                if (baseConfigs.TryGetValue("yPlayerDistanceToSpawn", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: yPlayerDistanceToSpawn is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: yPlayerDistanceToSpawn is not int is {value.GetType()}");
-                    else yPlayerDistanceToSpawn = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: yPlayerDistanceToSpawn not set");
-            }
-            { //zPlayerDistanceToSpawn
-                if (baseConfigs.TryGetValue("zPlayerDistanceToSpawn", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: zPlayerDistanceToSpawn is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: zPlayerDistanceToSpawn is not int is {value.GetType()}");
-                    else zPlayerDistanceToSpawn = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: zPlayerDistanceToSpawn not set");
-            }
-            { //maxChancesToFindAValidBlockToSpawn
-                if (baseConfigs.TryGetValue("maxChancesToFindAValidBlockToSpawn", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is null");
-                    else if (value is not long) Debug.Log($"CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn is not int is {value.GetType()}");
-                    else maxChancesToFindAValidBlockToSpawn = (int)(long)value;
-                else Debug.Log("CONFIGURATION ERROR: maxChancesToFindAValidBlockToSpawn not set");
-            }
-            { //spawnerDrops
-                if (baseConfigs.TryGetValue("spawnerDrops", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: spawnerDrops is null");
-                    else if (value is not JArray) Debug.Log($"CONFIGURATION ERROR: spawnerDrops is not List is {value.GetType()}");
-                    else spawnerDrops = value as JArray;
-                else Debug.Log("CONFIGURATION ERROR: spawnerDrops not set");
-            }
-            { //extendedLogs
-                if (baseConfigs.TryGetValue("extendedLogs", out object value))
-                    if (value is null) Debug.Log("CONFIGURATION ERROR: extendedLogs is null");
-                    else if (value is not bool) Debug.Log($"CONFIGURATION ERROR: extendedLogs is not boolean is {value.GetType()}");
-                    else extendedLogs = (bool)value;
-                else Debug.Log("CONFIGURATION ERROR: extendedLogs not set");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.Log($"ERROR: {ex.Message}");
-        }
+        SpawnerConfiguration config = Configuration.LoadSpawnerConfiguration(Api, spawnerID);
+        torchWillDisableSpawn = config.torchWillDisableSpawn;
+        spawnOnlyInGround = config.spawnOnlyInGround;
+        spawnOnlyWith2Heights = config.spawnOnlyWith2Heights;
+        droppable = config.droppable;
+        freezeOnAllEntitiesSpawned = config.freezeOnAllEntitiesSpawned;
+        healthAdditional = config.healthAdditional;
+        damageAdditional = config.damageAdditional;
+        entitiesToSpawn = config.entitiesToSpawn;
+        lightLevel1 = config.lightLevel1;
+        lightLevel2 = config.lightLevel2;
+        lightLevel3 = config.lightLevel3;
+        lightLevel4 = config.lightLevel4;
+        maxSpawnedEntities = config.maxSpawnedEntities;
+        maxEntitiesSpawnAtOnce = config.maxEntitiesSpawnAtOnce;
+        xSpawnMaxDistance = config.xSpawnMaxDistance;
+        ySpawnMaxDistance = config.ySpawnMaxDistance;
+        zSpawnMaxDistance = config.zSpawnMaxDistance;
+        xPlayerDistanceToSpawn = config.xPlayerDistanceToSpawn;
+        yPlayerDistanceToSpawn = config.yPlayerDistanceToSpawn;
+        zPlayerDistanceToSpawn = config.zPlayerDistanceToSpawn;
+        maxChancesToFindAValidBlockToSpawn = config.maxChancesToFindAValidBlockToSpawn;
+        spawnerDrops = config.spawnerDrops;
+        extendedLogs = config.extendedLogs;
+
         if (!droppable) Block.Drops = [];
         #endregion
     }
@@ -517,7 +372,7 @@ public class Spawner : BlockEntity
     {
         if (extendedLogs) Debug.Log("starting loot drop calculation");
         Random random = new();
-        JArray drops = null;
+        List<SpawnerDropItemConfiguration> drops = null;
         { // Getting the drops by chance
             // This is used to increase performance
             // when the chance is too low and cannot get any item
@@ -526,13 +381,13 @@ public class Spawner : BlockEntity
             while (true)
             {
                 // Swipe all drop lists
-                foreach (JObject drop in spawnerDrops.Cast<JObject>())
+                foreach (SpawnerDropGroupConfiguration drop in spawnerDrops)
                 {
-                    int chance = (int)drop["chance"] + chanceIncreaser;
+                    int chance = drop.chance + chanceIncreaser;
                     if (chance >= random.Next(0, 100))
                     {
                         // Adding the drops to the drops table
-                        drops = (JArray)drop["codes"];
+                        drops = drop.codes;
                         break;
                     }
                 }
@@ -544,13 +399,11 @@ public class Spawner : BlockEntity
 
         List<ItemStack> items = [];
         // Swiping every drop from the drops array
-        foreach (JObject drop in drops.Cast<JObject>())
+        foreach (SpawnerDropItemConfiguration drop in drops)
         {
-            int chance = (int)drop["chance"];
-            if (random.Next(0, 100) <= chance)
+            if (random.Next(0, 100) <= drop.chance)
             {
-                string itemCode = (string)drop["code"];
-                AssetLocation code = new(itemCode);
+                AssetLocation code = new(drop.code);
                 ItemStack item;
 
                 // Item
@@ -558,7 +411,7 @@ public class Spawner : BlockEntity
                 {
                     item = new(Api.World.GetItem(code))
                     {
-                        StackSize = random.Next((int)drop["minQuantity"], (int)drop["maxQuantity"] + 1)
+                        StackSize = random.Next(drop.minQuantity, drop.maxQuantity + 1)
                     };
                     items.Add(item);
                     continue;
@@ -570,7 +423,7 @@ public class Spawner : BlockEntity
                 {
                     item = new(Api.World.GetBlock(code))
                     {
-                        StackSize = random.Next((int)drop["minQuantity"], (int)drop["maxQuantity"] + 1)
+                        StackSize = random.Next(drop.minQuantity, drop.maxQuantity + 1)
                     };
                     items.Add(item);
                     continue;
@@ -578,7 +431,7 @@ public class Spawner : BlockEntity
                 catch (Exception) { }
 
                 // Invalid
-                Debug.Log($"ERROR: Cannot retrieve spawner drop because {itemCode} does not exist");
+                Debug.Log($"ERROR: Cannot retrieve spawner drop because {drop.code} does not exist");
             }
         }
         return items;
