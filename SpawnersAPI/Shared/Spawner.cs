@@ -45,9 +45,9 @@ public class Spawner : BlockEntity
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
-        // Clients does not need to register a game tick listener
-        if (api.Side != EnumAppSide.Client)
-            progressTickID = RegisterGameTickListener(OnTickRate, 2000, 0);
+        if (api.Side == EnumAppSide.Client) return;
+
+        progressTickID = RegisterGameTickListener(OnTickRate, 2000, 0);
 
         #region config-load
         spawnerID = Block.Code.ToString().Replace("spawnersapi:spawner-", "");
